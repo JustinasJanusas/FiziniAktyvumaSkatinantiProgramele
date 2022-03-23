@@ -15,12 +15,14 @@
 ></ImageView>
 
     <TextView
+        android:layout_marginTop="20dp"
         android:id="@+id/nameText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/taskImage"
         android:text="TextView"
-
+        android:textStyle="bold"
+        android:textColor="@color/purple_700"
         />
 
     <LinearLayout
@@ -30,11 +32,12 @@
         android:layout_gravity="center_horizontal"
         android:layout_toRightOf="@id/taskImage"
         android:layout_below="@id/nameText">
+
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
+        android:textStyle="bold"
         android:text="Sudėtingumas: " />
         <TextView
             android:id="@+id/levelText"
@@ -58,6 +61,7 @@
         android:layout_below="@id/levelInformationText"
         android:layout_toRightOf="@id/taskImage"
         android:text="Tipas: "
+        android:textStyle="bold"
 />
 
 
