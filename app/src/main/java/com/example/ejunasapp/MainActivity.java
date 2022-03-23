@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -24,15 +25,16 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
+import android.widget.Button;
 import org.w3c.dom.Text;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.zip.Inflater;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
     private String TAG = "MainActivity";
 
     @Override
@@ -77,10 +79,8 @@ public class MainActivity extends AppCompatActivity {
 
             showTasks(result);
         }
-
-
-
     }
+
     private void showTasks(List<Task> data){
         CustomAdapter listAdapter = new CustomAdapter(getApplicationContext(), (ArrayList) data);
         ListView taskListView = findViewById(R.id.taskListView);
@@ -89,33 +89,11 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Object o = taskListView.getItemAtPosition(position);
                 Task task = (Task) o;
-                showTaskInformation(task, parent);
+                showDetailedInformation(task, parent);
             }
         });
     }
-    private void showTaskInformation(Task task, View v){
-        PopupWindow window = new PopupWindow(this);
-        LayoutInflater inflater = (LayoutInflater)
-                getSystemService(LAYOUT_INFLATER_SERVICE);
-        View popupView = inflater.inflate(R.layout.popup_task_window, null);
-        TextView textV = (TextView) popupView.findViewById(R.id.popupTaskName);
-        textV.setText(task.name);
-        textV = (TextView) popupView.findViewById(R.id.popupCategoryName);
-        textV.setText(task.category.name);
-        textV = (TextView) popupView.findViewById(R.id.popupLevelName);
-        textV.setText(task.level.name);
-        textV = (TextView) popupView.findViewById(R.id.popupTypeName);
-        textV.setText(task.type.name);
-        textV = (TextView) popupView.findViewById(R.id.popupAuthorName);
-        textV.setText(task.author);
-        textV = (TextView) popupView.findViewById(R.id.popupTaskText);
-        textV.setText(task.text);
-        int width = RelativeLayout.LayoutParams.WRAP_CONTENT;
-        int height = RelativeLayout.LayoutParams.WRAP_CONTENT;
-        PopupWindow popupWindow = new PopupWindow(popupView, width, height, true);
 
-        popupWindow.showAtLocation(v.getRootView(), Gravity.CENTER, 0, 0);
-    }
 
     private class CustomAdapter extends BaseAdapter{
 
@@ -162,4 +140,36 @@ public class MainActivity extends AppCompatActivity {
             return convertView;
         }
     }
+    private void showDetailedInformation(Task task, View v){
+
+        Intent myIntent = new Intent(this, TaskDetailedActivity.class);
+        myIntent.putExtra("task", (Serializable) task);
+        startActivity(myIntent);
+    }
+    //---------------TO NEREIKES VELIAU, CIA KAD PARODYTU POPWINDOW KAI PASPAUDI ANT PASIRINKTOS UZDUOTIES---------
+    /*
+    private void showTaskInformation(Task task, View v){
+        PopupWindow window = new PopupWindow(this);
+        LayoutInflater inflater = (LayoutInflater)
+                getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupView = inflater.inflate(R.layout.popup_task_window, null);
+        TextView textV = (TextView) popupView.findViewById(R.id.popupTaskName);
+        textV.setText(task.name);
+        textV = (TextView) popupView.findViewById(R.id.popupCategoryName);
+        textV.setText(task.category.name);
+        textV = (TextView) popupView.findViewById(R.id.popupLevelName);
+        textV.setText(task.level.name);
+        textV = (TextView) popupView.findViewById(R.id.popupTypeName);
+        textV.setText(task.type.name);
+        textV = (TextView) popupView.findViewById(R.id.popupAuthorName);
+        textV.setText(task.author);
+        textV = (TextView) popupView.findViewById(R.id.popupTaskText);
+        textV.setText(task.text);
+        int width = RelativeLayout.LayoutParams.WRAP_CONTENT;
+        int height = RelativeLayout.LayoutParams.WRAP_CONTENT;
+        PopupWindow popupWindow = new PopupWindow(popupView, width, height, true);
+
+        popupWindow.showAtLocation(v.getRootView(), Gravity.CENTER, 0, 0);
+    }
+    */
 }

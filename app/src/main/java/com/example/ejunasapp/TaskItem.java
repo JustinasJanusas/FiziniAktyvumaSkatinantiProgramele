@@ -1,6 +1,8 @@
 package com.example.ejunasapp;
 
-public class TaskItem {
+import java.io.Serializable;
+
+public class TaskItem implements Serializable {
     public int id;
     public String name;
 }

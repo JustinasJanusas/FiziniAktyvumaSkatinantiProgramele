@@ -9,7 +9,7 @@ public class DataAPI {
     public static List<Task> jsonToTasks(String RestURL) throws Exception{
         List<Task> data = new ArrayList<Task>();
         String response = WebAPI.getData(RestURL);
-        if(response.length() > 1){
+        if(response.length() > 0){
             Gson gson;
             gson = new Gson();
             java.lang.reflect.Type type =

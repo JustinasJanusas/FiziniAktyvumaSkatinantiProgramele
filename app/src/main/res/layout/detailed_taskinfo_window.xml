@@ -5,35 +5,50 @@
     android:paddingLeft="10dp"
     android:paddingRight="10dp">
 
+    <LinearLayout
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:layout_below="@id/image">
     <TextView
         android:id="@+id/nameText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="-250dp"
-        android:layout_marginTop="70dp"
-        android:layout_toRightOf="@id/taskImage"
         android:text="TextView"
         android:textColor="@color/purple_700"
         android:textSize="30dp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:layout_gravity="center"/>
+    </LinearLayout>
 
-    <ImageView
-        android:id="@+id/taskImage"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginStart="220dp"
-        android:layout_marginTop="45dp"
-        android:layout_marginEnd="15dp"
-        android:layout_marginBottom="20dp"></ImageView>
+    <LinearLayout
+        android:id="@+id/image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true">
+
+        <ImageView
+            android:id="@+id/taskImage"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="20dp"></ImageView>
+    </LinearLayout>
 
     <Button
         android:id="@+id/btn1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:text="Grįžti"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginTop="10dp"
+        android:text="Grįžti"
+        android:background="@drawable/rounded_button"
+        android:textColor="@color/white"/>
 
     <Button
         android:id="@+id/done"
@@ -41,16 +56,19 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="50dp"
         android:text="Atlikti"
-        android:layout_marginBottom="30dp"/>
+        android:background="@drawable/rounded_button"
+        android:textColor="@color/white"/>
 
     <LinearLayout
         android:id="@+id/levelInformationText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/taskImage"
-        android:layout_marginBottom="7dp">
+        android:layout_below="@id/name"
+        android:layout_marginBottom="7dp"
+        android:layout_marginTop="50dp">
 
         <TextView
             android:id="@+id/textView2"
@@ -146,7 +164,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/authorInformationText"
-        android:layout_marginTop="80dp">
+        android:layout_marginTop="30dp">
         <TextView
             android:id="@+id/textView6"
             android:layout_width="wrap_content"
