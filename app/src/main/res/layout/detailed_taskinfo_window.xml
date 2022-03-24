@@ -57,9 +57,9 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="50dp"
-        android:text="Atlikti"
         android:background="@drawable/rounded_button"
-        android:textColor="@color/white"/>
+        android:text="Atlikti"
+        android:textColor="@color/white" />
 
     <LinearLayout
         android:id="@+id/levelInformationText"

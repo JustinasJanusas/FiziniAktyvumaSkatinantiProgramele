@@ -5,9 +5,15 @@
       <map>
         <entry key="..\:/Users/Justinas/Desktop/PVPREPO/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.30833333333333335" />
         <entry key="..\:/Users/Justinas/Desktop/PVPREPO/app/src/main/res/drawable/ic_launcher_background.xml" value="0.30833333333333335" />
+        <entry key="..\:/Users/Justinas/Desktop/PVPREPO/app/src/main/res/drawable/rounded_box.xml" value="0.4078125" />
+        <entry key="..\:/Users/Justinas/Desktop/PVPREPO/app/src/main/res/drawable/rounded_button.xml" value="0.4078125" />
         <entry key="..\:/Users/Justinas/Desktop/PVPREPO/app/src/main/res/layout/activity_main.xml" value="0.3307291666666667" />
+        <entry key="..\:/Users/Justinas/Desktop/PVPREPO/app/src/main/res/layout/detailed_taskinfo_window.xml" value="0.2921875" />
         <entry key="..\:/Users/Justinas/Desktop/PVPREPO/app/src/main/res/layout/popup_task_window.xml" value="0.2921875" />
+        <entry key="..\:/Users/Justinas/Desktop/PVPREPO/app/src/main/res/layout/popup_window_answer.xml" value="0.39166666666666666" />
         <entry key="..\:/Users/Justinas/Desktop/PVPREPO/app/src/main/res/layout/task_row.xml" value="0.3046875" />
+        <entry key="..\:/Users/Justinas/Desktop/PVPREPO/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.3359375" />
+        <entry key="..\:/Users/Justinas/Desktop/PVPREPO/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.3359375" />
       </map>
     </option>
   </component>

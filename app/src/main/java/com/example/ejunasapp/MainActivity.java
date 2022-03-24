@@ -36,12 +36,15 @@ import java.util.zip.Inflater;
 
 public class MainActivity extends AppCompatActivity{
     private String TAG = "MainActivity";
-
+    static public List<Task> taskList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getTasks();
+        if(taskList != null)
+            showTasks(taskList);
+        else
+            getTasks();
     }
 
     private void getTasks(){
@@ -76,7 +79,7 @@ public class MainActivity extends AppCompatActivity{
         protected void onProgressUpdate(Void... progress){}
         protected void onPostExecute(List<Task> result){
             actionProgressDialog.cancel();
-
+            taskList = result;
             showTasks(result);
         }
     }
