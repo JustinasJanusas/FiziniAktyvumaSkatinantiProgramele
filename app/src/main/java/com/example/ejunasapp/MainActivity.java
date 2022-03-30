@@ -93,6 +93,7 @@ public class MainActivity extends AppCompatActivity{
                 Object o = taskListView.getItemAtPosition(position);
                 Task task = (Task) o;
                 showDetailedInformation(task, parent);
+
             }
         });
     }
@@ -148,6 +149,12 @@ public class MainActivity extends AppCompatActivity{
         Intent myIntent = new Intent(this, TaskDetailedActivity.class);
         myIntent.putExtra("task", (Serializable) task);
         startActivity(myIntent);
+    }
+    //REGISTRACIJOS FORMOS PATIKRINIMAS---------------------------------------
+    private void showRegistration(View v)
+    {
+        Intent registrIntent = new Intent(this, RegistrationActivity.class);
+        startActivity(registrIntent);
     }
     //---------------TO NEREIKES VELIAU, CIA KAD PARODYTU POPWINDOW KAI PASPAUDI ANT PASIRINKTOS UZDUOTIES---------
     /*

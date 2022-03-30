@@ -25,7 +25,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".TaskDetailedActivity"/>
-
+        <activity android:name=".RegistrationActivity"/>
     </application>
 
 </manifest>
