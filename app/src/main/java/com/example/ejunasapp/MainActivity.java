@@ -79,8 +79,11 @@ public class MainActivity extends AppCompatActivity{
         protected void onProgressUpdate(Void... progress){}
         protected void onPostExecute(List<Task> result){
             actionProgressDialog.cancel();
-            taskList = result;
-            showTasks(result);
+
+            if(result != null) {
+                taskList = result;
+                showTasks(taskList);
+            }
         }
     }
 
@@ -139,7 +142,6 @@ public class MainActivity extends AppCompatActivity{
                 byte[] imageBytes = Base64.getDecoder().decode(currentRow.base64_image);
                 Bitmap image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
                 imageView.setImageBitmap(image);
-
             }
             return convertView;
         }

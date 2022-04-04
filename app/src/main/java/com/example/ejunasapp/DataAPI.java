@@ -1,5 +1,7 @@
 package com.example.ejunasapp;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -19,4 +21,5 @@ public class DataAPI {
         }
         return data;
     }
+
 }

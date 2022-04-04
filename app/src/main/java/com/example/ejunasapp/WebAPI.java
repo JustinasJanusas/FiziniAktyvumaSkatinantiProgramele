@@ -1,6 +1,13 @@
 package com.example.ejunasapp;
 
+import android.preference.PreferenceActivity;
+import android.util.JsonReader;
 import android.util.Log;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -8,14 +15,31 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Base64;
+import java.util.List;
+
+import javax.crypto.SecretKey;
+
+import io.jsonwebtoken.Header;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwsHeader;
+import io.jsonwebtoken.Jwt;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 
 public class WebAPI {
     public static String getData(String url)
             throws Exception{
         URL obj = new URL(url);
+
         HttpURLConnection con = (HttpURLConnection)
                 obj.openConnection();
+        String basicAuth = "Bearer " + TokenPair.getAuthenticationToken();
+
+        con.setRequestProperty ("Authorization", basicAuth);
         con.setRequestMethod("GET");
+
         int responseCode = con.getResponseCode();
         if(responseCode == HttpURLConnection.HTTP_OK){
             BufferedReader in = new BufferedReader(
@@ -36,6 +60,8 @@ public class WebAPI {
     public static boolean sendLocation(String url, float latitude, float longtitude) throws Exception {
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        String basicAuth = "Bearer " + TokenPair.getAuthenticationToken();
+        con.setRequestProperty ("Authorization", basicAuth);
         con.setRequestMethod("POST");
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(con.getOutputStream(), "UTF-8"));
         writer.write("latitude="+latitude + "&longitude="+longtitude);
@@ -46,6 +72,33 @@ public class WebAPI {
             String line = reader.readLine();
             if(line != null){
                 return Boolean.parseBoolean(line);}
+        }
+        throw new Exception("Problem connecting to database");
+    }
+    public static boolean attemptLogin(String url, String username, String password) throws Exception {
+        URL obj = new URL(url);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        con.setRequestMethod("POST");
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(con.getOutputStream(), "UTF-8"));
+        writer.write("username="+username + "&password="+password);
+        writer.flush();
+        writer.close();
+        int response = con.getResponseCode();
+        if(response == HttpURLConnection.HTTP_OK){
+            BufferedReader reader =  new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
+            String line = reader.readLine();
+            if(line != null){
+                JSONObject json = new JSONObject(line);
+
+                TokenPair.setAuthenticationToken(json.get("access").toString());
+                TokenPair.setRefreshToken(json.get("refresh").toString());
+
+                return true;}
+            else
+                return false;
+        }
+        else if(response == HttpURLConnection.HTTP_UNAUTHORIZED){
+            return false;
         }
         throw new Exception("Problem connecting to database");
     }

@@ -20,6 +20,13 @@ private String TAG="RegistrationActivity";
 protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.registration_activity);
-
+        Button backButton = findViewById(R.id.btn1);
+        backButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                        Intent myIntent = new Intent(RegistrationActivity.this, LoginActivity.class);
+                        startActivity(myIntent);
+                }
+        });
         }
 }
