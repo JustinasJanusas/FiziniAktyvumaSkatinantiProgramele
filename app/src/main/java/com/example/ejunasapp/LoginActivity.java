@@ -96,7 +96,10 @@ public class LoginActivity extends Activity {
         mySnackbar.show();
     }
     private void doLogin(){
+        Intent serviceIntent = new Intent(LoginActivity.this, TokenService.class);
+        startService(serviceIntent);
         Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(myIntent);
+        finish();
     }
 }

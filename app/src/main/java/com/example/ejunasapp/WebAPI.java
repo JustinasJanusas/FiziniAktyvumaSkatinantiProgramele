@@ -35,9 +35,9 @@ public class WebAPI {
 
         HttpURLConnection con = (HttpURLConnection)
                 obj.openConnection();
-        String basicAuth = "Bearer " + TokenPair.getAuthenticationToken();
+        String auth = "Bearer " + TokenPair.getAuthenticationToken();
 
-        con.setRequestProperty ("Authorization", basicAuth);
+        con.setRequestProperty ("Authorization", auth);
         con.setRequestMethod("GET");
 
         int responseCode = con.getResponseCode();
@@ -81,6 +81,35 @@ public class WebAPI {
         con.setRequestMethod("POST");
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(con.getOutputStream(), "UTF-8"));
         writer.write("username="+username + "&password="+password);
+        writer.flush();
+        writer.close();
+        int response = con.getResponseCode();
+        if(response == HttpURLConnection.HTTP_OK){
+            BufferedReader reader =  new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
+            String line = reader.readLine();
+            if(line != null){
+                JSONObject json = new JSONObject(line);
+
+                TokenPair.setAuthenticationToken(json.get("access").toString());
+                TokenPair.setRefreshToken(json.get("refresh").toString());
+
+                return true;}
+            else
+                return false;
+        }
+        else if(response == HttpURLConnection.HTTP_UNAUTHORIZED){
+            return false;
+        }
+        throw new Exception("Problem connecting to database");
+    }
+    public static boolean getToken(String url) throws Exception {
+        URL obj = new URL(url);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        String auth = "Bearer " + TokenPair.getAuthenticationToken();
+        con.setRequestProperty ("Authorization", auth);
+        con.setRequestMethod("POST");
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(con.getOutputStream(), "UTF-8"));
+        writer.write("refresh="+TokenPair.getRefreshToken());
         writer.flush();
         writer.close();
         int response = con.getResponseCode();
