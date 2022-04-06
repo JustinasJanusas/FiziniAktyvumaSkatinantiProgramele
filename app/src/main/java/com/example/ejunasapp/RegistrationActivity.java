@@ -2,6 +2,7 @@ package com.example.ejunasapp;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,13 +11,18 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.os.AsyncTask;
+
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -31,6 +37,8 @@ public class RegistrationActivity extends Activity {
         protected void onCreate(Bundle savedInstanceState) {
                 super.onCreate(savedInstanceState);
                 setContentView(R.layout.registration_activity);
+
+
                 Button backButton = findViewById(R.id.btn1);
                 Button registerButton = findViewById(R.id.done);
                 registerButton.setOnClickListener(new View.OnClickListener() {
@@ -197,32 +205,84 @@ public class RegistrationActivity extends Activity {
 
                 return true;
         }
-        static public List<User> usersList;
-        private void getUsers() {new getUsers().execute(Tools.RestURL+"auth/user");}
-        private class getUsers extends  AsyncTask<String, Void, List<User>>
-        {
+        //---------------------------------------------------------------------------
+        //GALBŪT REIKĖS---------------------------PATIKRINIMUI DĖL VIENODŲ USERNAMŲ IR EL PAŠTŲ
+        //nes jei yra vienodų su DB neduoda prireginti, reikia padaryt patikrinima ir parodyt useriui
+       /* static public List<User> usersList;
+        private void getUsers() {new getUsersUser().execute(Tools.RestURL+"auth/user");}
+        private class getUsersUser extends  AsyncTask<String, Void, List<User>> {
                 ProgressDialog actionProgressDialog =
                         new ProgressDialog(RegistrationActivity.this);
 
-                protected  List<User> doInBackground(String... str_param)
-                {
+                protected List<User> doInBackground(String... str_param) {
                         String RestURL = str_param[0];
                         List<User> data = null;
                         try {
                                 data = DataAPI.jsonToUsers(RestURL);
-                        }
-                        catch (Exception ex){
+                                Log.e("data", ""+data);
+                        } catch (Exception ex) {
                                 Log.e(TAG, ex.toString());
                         }
                         return data;
                 }
-                protected void onProgressUpdate(Void... progress){}
+
+                protected void onProgressUpdate(Void... progress) {
+                }
+
                 protected void onPostExecute(List<User> result) {
                         actionProgressDialog.cancel();
 
                         if (result != null) {
-                                taskList = result;
+                                usersList = result;
+                                Log.e("userList", ""+usersList);
                         }
                 }
         }
+
+                /*private class CustomAdapter extends BaseAdapter {
+
+                        private ArrayList<User> singleRow;
+                        private LayoutInflater thisInflater;
+
+                        public CustomAdapter(Context context, ArrayList<User> aRow) {
+
+                                this.singleRow = aRow;
+                                thisInflater = (LayoutInflater.from(context));
+
+                        }
+                        @Override
+                        public int getCount() {
+                                return singleRow.size();
+                        }
+
+                        @Override
+                        public Object getItem(int position) {
+                                return singleRow.get(position);
+                        }
+                        @Override
+                        public long getItemId(int position) {
+                                return position;
+                        }
+
+                        @Override
+                        public View getView(int position, View convertView, ViewGroup parent) {
+                                if (convertView == null) {
+                                      /*  convertView = thisInflater.inflate( R.layout.task_row, parent, false );
+                                        TextView nameText = convertView.findViewById(R.id.nameText);
+                                        TextView levelText = convertView.findViewById(R.id.levelText);
+                                        TextView typeText = convertView.findViewById(R.id.typeText);
+                                        ImageView imageView = convertView.findViewById(R.id.taskImage);
+                                        Task currentRow = (Task) getItem(position);
+                                        nameText.setText(currentRow.name);
+                                        levelText.setText(currentRow.level.name);
+                                        typeText.setText(currentRow.type.name);
+                                        byte[] imageBytes = Base64.getDecoder().decode(currentRow.base64_image);
+                                        Bitmap image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+                                        imageView.setImageBitmap(image);*/
+                               /* }
+                                return convertView;
+                        } */
+
+
+
 }
