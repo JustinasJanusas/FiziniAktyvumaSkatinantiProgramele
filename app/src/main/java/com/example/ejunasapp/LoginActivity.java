@@ -6,9 +6,11 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -93,6 +95,10 @@ public class LoginActivity extends Activity {
     private void showMessage(String msg){
         Snackbar mySnackbar = Snackbar.make(findViewById(R.id.loginPasswordText),
                 msg, 3000);
+        View view = mySnackbar.getView();
+        FrameLayout.LayoutParams params =(FrameLayout.LayoutParams)view.getLayoutParams();
+        params.gravity = Gravity.TOP;
+        view.setLayoutParams(params);
         mySnackbar.show();
     }
     private void doLogin(){
