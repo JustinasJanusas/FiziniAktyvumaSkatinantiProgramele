@@ -52,6 +52,7 @@ public class RegistrationActivity extends Activity {
                         public void onClick(View v) {
                                 Intent myIntent = new Intent(RegistrationActivity.this, LoginActivity.class);
                                 startActivity(myIntent);
+                                finish();
                         }
                 });
         }
@@ -188,6 +189,7 @@ public class RegistrationActivity extends Activity {
                         return false;
                 }else {
                         return true;
+
                 }
         }
         public boolean ValidNameSurname(String nameSurname)

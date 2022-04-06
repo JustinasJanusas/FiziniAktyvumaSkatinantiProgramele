@@ -1,5 +1,7 @@
 package com.example.ejunasapp;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
@@ -19,11 +21,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Button;
 import org.w3c.dom.Text;
@@ -37,6 +42,13 @@ import java.util.zip.Inflater;
 public class MainActivity extends AppCompatActivity{
     private String TAG = "MainActivity";
     static public List<Task> taskList;
+    static public List<TaskItem> categories;
+    static public List<TaskItem> levels;
+    static public int categoryId =-1;
+    static public int levelId = -1;
+    static public int categorySelected =0;
+    static public int levelSelected = 0;
+     private Boolean firstTime = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,7 +80,18 @@ public class MainActivity extends AppCompatActivity{
             String RestURL = str_param[0];
             List<Task> data = null;
             try{
-                data = DataAPI.jsonToTasks(RestURL);
+                if(categories == null){
+                    categories = getTaskItems(Tools.RestURL+"api-auth/categories");
+                    categories.add(0, new TaskItem(-1, "Visos"));
+                }
+                if(levels == null){
+                    levels = getTaskItems(Tools.RestURL+"api-auth/levels");
+                    levels.add(0, new TaskItem(-1, "Visi"));
+                }
+                java.lang.reflect.Type type =
+                        new com.google.gson.reflect.TypeToken<List<Task>>()
+                        {}.getType();
+                data = (List<Task>) DataAPI.jsonToData(RestURL, type);
 
             }
             catch (Exception ex){
@@ -88,6 +111,15 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void showTasks(List<Task> data){
+        if(firstTime) {
+            firstTime = false;
+            if (categories != null) {
+                fillSpinner(categories, findViewById(R.id.categorySpinner), categorySelected);
+            }
+            if (levels != null) {
+                fillSpinner(levels, findViewById(R.id.levelSpinner), levelSelected);
+            }
+        }
         CustomAdapter listAdapter = new CustomAdapter(getApplicationContext(), (ArrayList) data);
         ListView taskListView = findViewById(R.id.taskListView);
         taskListView.setAdapter(listAdapter);
@@ -100,8 +132,56 @@ public class MainActivity extends AppCompatActivity{
             }
         });
     }
+    private List<TaskItem> getTaskItems(String url) throws Exception{
+        java.lang.reflect.Type type =
+                new com.google.gson.reflect.TypeToken<List<TaskItem>>()
+                {}.getType();
+        return (List<TaskItem>) DataAPI.jsonToData(url, type);
+    }
 
+    private void fillSpinner(List<TaskItem> list, Spinner spinner, int pos){
 
+        CustomSpinnerAdapter adapter = new CustomSpinnerAdapter(MainActivity.this,
+                android.R.layout.simple_spinner_item,  list.toArray(new TaskItem[list.size()]));
+        spinner.setAdapter(adapter);
+        spinner.setSelection(pos);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view,
+                                       int position, long id) {
+                getFilteredTasks();
+
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapter) {  }
+        });
+    }
+    private void getFilteredTasks(){
+        Spinner categorySpinner = findViewById(R.id.categorySpinner);
+        int cId =((TaskItem) categorySpinner.getSelectedItem()).id;
+        Spinner levelSpinner = findViewById(R.id.levelSpinner);
+        int lId =((TaskItem) levelSpinner.getSelectedItem()).id;
+        if(cId != categoryId || lId != levelId) {
+            String url = Tools.RestURL + "api-auth/tasks";
+            if (cId > -1 || lId > -1) {
+                url += "?";
+                if (cId > -1) {
+                    categoryId = cId;
+                    categorySelected = categorySpinner.getSelectedItemPosition();
+                    url += "category=" + cId;
+                    if (lId > -1)
+                        url += "&";
+                }
+                if (lId > -1) {
+                     levelSelected = levelSpinner.getSelectedItemPosition();
+                    levelId = lId;
+                    url += "level=" + lId;
+                }
+            }
+            new getTasksTask().execute(url);
+        }
+    }
     private class CustomAdapter extends BaseAdapter{
 
         private ArrayList<Task> singleRow;
@@ -146,8 +226,47 @@ public class MainActivity extends AppCompatActivity{
             return convertView;
         }
     }
-    private void showDetailedInformation(Task task, View v){
+    private class CustomSpinnerAdapter extends ArrayAdapter<TaskItem>{
+        private Context context;
+        private TaskItem[] values;
+        public CustomSpinnerAdapter(Context context, int textViewResourceId, TaskItem[] values){
+            super(context, textViewResourceId, values);
+            this.context = context;
+            this.values = values;
+        }
 
+        @Override
+        public int getCount() {
+            return values.length;
+        }
+
+        @Override
+        public TaskItem getItem(int position){
+            return values[position];
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position,  View convertView, ViewGroup parent) {
+            TextView label = (TextView) super.getView(position, convertView, parent);
+            label.setText(values[position].name);
+            return label;
+        }
+
+        @Override
+        public View getDropDownView(int position,  View convertView, ViewGroup parent) {
+            TextView label = (TextView) super.getDropDownView(position, convertView, parent);
+            label.setTextColor(Color.BLACK);
+            label.setText(values[position].name);
+            return label;
+        }
+
+    }
+    private void showDetailedInformation(Task task, View v){
         Intent myIntent = new Intent(this, TaskDetailedActivity.class);
         myIntent.putExtra("task", (Serializable) task);
         startActivity(myIntent);

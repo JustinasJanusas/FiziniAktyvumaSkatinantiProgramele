@@ -20,14 +20,6 @@ import java.util.List;
 
 import javax.crypto.SecretKey;
 
-import io.jsonwebtoken.Header;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.JwsHeader;
-import io.jsonwebtoken.Jwt;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
-
 public class WebAPI {
     public static String getData(String url)
             throws Exception{

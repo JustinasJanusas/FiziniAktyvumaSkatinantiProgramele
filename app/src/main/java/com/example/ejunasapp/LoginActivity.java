@@ -38,6 +38,7 @@ public class LoginActivity extends Activity {
             public void onClick(View v) {
                 Intent myIntent = new Intent(LoginActivity.this, RegistrationActivity.class);
                 startActivity(myIntent);
+                finish();
             }
         });
     }
