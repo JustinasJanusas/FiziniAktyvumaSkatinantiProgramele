@@ -26,6 +26,7 @@ protected void onCreate(Bundle savedInstanceState){
                 public void onClick(View v) {
                         Intent myIntent = new Intent(RegistrationActivity.this, LoginActivity.class);
                         startActivity(myIntent);
+                        finish();
                 }
         });
         }
