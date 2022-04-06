@@ -52,7 +52,7 @@ public class TokenService extends Service {
             // The update frequency should often be user configurable.  This is not.
 
             long currentTimeMillis = System.currentTimeMillis();
-            long nextUpdateTimeMillis = currentTimeMillis + 15 * DateUtils.MINUTE_IN_MILLIS;
+            long nextUpdateTimeMillis = (long)(currentTimeMillis + 14.6 * DateUtils.MINUTE_IN_MILLIS);
 
             AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
             alarmManager.set(AlarmManager.RTC, nextUpdateTimeMillis, pendingIntent);
