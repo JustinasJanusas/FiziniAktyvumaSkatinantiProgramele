@@ -2,7 +2,9 @@ package com.example.ejunasapp;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,6 +26,13 @@ public class LoginActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SharedPreferences sharedPref = getSharedPreferences(getString(R.string.token_file), Context.MODE_PRIVATE);
+        String token = sharedPref.getString(getString(R.string.refresh_token), "");
+        if(token != ""){
+            TokenPair.setRefreshToken(token);
+            doLogin();
+        }
+
         setContentView(R.layout.login_activity);
         Button buttonLogin = findViewById(R.id.loginActionButton);
         Button buttonRegister = findViewById(R.id.loginRegistrationButton);
@@ -41,6 +50,7 @@ public class LoginActivity extends Activity {
                 finish();
             }
         });
+
     }
     private void onLoginClick(){
         String name = ((EditText) findViewById(R.id.loginNameText)).getText().toString();

@@ -181,6 +181,17 @@ public class WebAPI {
         }
         throw new Exception("Problem connecting to database");
     }
-
+    public static int sendRefreshToken(String url, String method) throws Exception{
+        URL obj = new URL(url);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        String auth = "Bearer " + TokenPair.getAuthenticationToken();
+        con.setRequestProperty ("Authorization", auth);
+        con.setRequestMethod(method);
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(con.getOutputStream(), "UTF-8"));
+        writer.write("refresh_token="+TokenPair.getRefreshToken());
+        writer.flush();
+        writer.close();
+        return con.getResponseCode();
+    }
 }
 

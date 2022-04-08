@@ -23,6 +23,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.CancellationSignal;
 import android.text.Layout;
 import android.util.Log;
 import android.view.Gravity;
@@ -47,6 +48,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.concurrent.Executor;
 import java.util.zip.Inflater;
 
 import javax.xml.transform.Source;
@@ -158,22 +160,51 @@ public class TaskDetailedActivity extends Activity {
     }
     private void locationPermissionCheck(){
 
-            ActivityCompat.requestPermissions(this, new String[]{
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION},
-                    PackageManager.PERMISSION_GRANTED) ;
+        if (ContextCompat.checkSelfPermission(
+                getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
+                getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED) {
+
+            Location location = getLastKnownLocation();
+            if(location != null)
+                new PostLocationTask().execute(Tools.RestURL+"api-auth/task/"+task.id, location.getLatitude()+"", location.getLongitude()+"" );
+            else {
+                findViewById(R.id.done).setClickable(true);
+                Snackbar mySnackbar = Snackbar.make(this.findViewById(R.id.done),
+                        "Įvyko klaida nustatant jūsų vietovę", 5000);
+                mySnackbar.show();
+            }
+        }
+        else {
+            requestPermissions(new String[] { Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION },
+                                PackageManager.PERMISSION_GRANTED);
+        }
 
     }
     @SuppressLint("MissingPermission")
+    private Location getLastKnownLocation() {
+        LocationManager mLocationManager = (LocationManager)getApplicationContext().getSystemService(LOCATION_SERVICE);
+        List<String> providers = mLocationManager.getProviders(true);
+        Location bestLocation = null;
+        for (String provider : providers) {
+             Location l = mLocationManager.getLastKnownLocation(provider);
+            if (l == null) {
+                continue;
+            }
+            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+                bestLocation = l;
+            }
+        }
+        return bestLocation;
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions,
                                            int[] grantResults) {
         if (grantResults.length > 0 &&
-                grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            LocationManager locationManager = (LocationManager)
-                    getSystemService(Context.LOCATION_SERVICE);
-            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            new PostLocationTask().execute(Tools.RestURL+"api-auth/task/"+task.id, location.getLatitude()+"", location.getLongitude()+"" );
+                grantResults[0] == PackageManager.PERMISSION_GRANTED ) {
+            locationPermissionCheck();
         }  else {
             Snackbar mySnackbar = Snackbar.make(this.findViewById(R.id.done),
                     "Kad galėtumėte pateikti savo atsakymą, programai reikia prieigos" +

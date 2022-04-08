@@ -1,5 +1,8 @@
 package com.example.ejunasapp;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 public class TokenPair {
     static private String refreshToken;
     static private String authenticationToken;
@@ -15,5 +18,9 @@ public class TokenPair {
     }
     public static String getAuthenticationToken(){
         return authenticationToken;
+    }
+    public static void wipeData(){
+        refreshToken = "";
+        authenticationToken = "";
     }
 }
