@@ -11,8 +11,6 @@
         android:topLeftRadius="5dp"
         android:topRightRadius="5dp" />
     <stroke
-        android:width="2dp"
-        android:dashGap="2dp"
-        android:dashWidth="2dp"/>
+        android:width="2dp"/>
 
 </shape>
