@@ -1,63 +1,60 @@
 package com.example.ejunasapp;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.pm.PackageManager;
-import android.graphics.Path;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.CancellationSignal;
-import android.text.Layout;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Button;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import org.w3c.dom.Text;
-
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.zip.Inflater;
-
-import javax.xml.transform.Source;
+import java.util.function.Consumer;
 
 public class TaskDetailedActivity extends Activity {
 
     private String TAG = "TaskDetailedActivity";
     Button submitButton;
     Task task;
+    final LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            new PostLocationTask().execute(Tools.RestURL+"api-auth/task/"+task.id, location.getLatitude()+"", location.getLongitude()+"" );
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+            Log.d("Status Changed", String.valueOf(status));
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+            Log.d("Provider Enabled", provider);
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+            Log.d("Provider Disabled", provider);
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -166,15 +163,7 @@ public class TaskDetailedActivity extends Activity {
                 getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED) {
 
-            Location location = getLastKnownLocation();
-            if(location != null)
-                new PostLocationTask().execute(Tools.RestURL+"api-auth/task/"+task.id, location.getLatitude()+"", location.getLongitude()+"" );
-            else {
-                findViewById(R.id.done).setClickable(true);
-                Snackbar mySnackbar = Snackbar.make(this.findViewById(R.id.done),
-                        "Įvyko klaida nustatant jūsų vietovę", 5000);
-                mySnackbar.show();
-            }
+            getLocation();
         }
         else {
             requestPermissions(new String[] { Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION },
@@ -183,20 +172,24 @@ public class TaskDetailedActivity extends Activity {
 
     }
     @SuppressLint("MissingPermission")
-    private Location getLastKnownLocation() {
+    private void getLocation() {
         LocationManager mLocationManager = (LocationManager)getApplicationContext().getSystemService(LOCATION_SERVICE);
-        List<String> providers = mLocationManager.getProviders(true);
-        Location bestLocation = null;
-        for (String provider : providers) {
-             Location l = mLocationManager.getLastKnownLocation(provider);
-            if (l == null) {
-                continue;
-            }
-            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
-                bestLocation = l;
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            mLocationManager.getCurrentLocation(
+                    LocationManager.GPS_PROVIDER,
+                    null,
+                    this.getMainExecutor(),
+                    new Consumer<Location>() {
+                        @Override
+                        public void accept(Location location) {
+                            // code
+                            new PostLocationTask().execute(Tools.RestURL+"api-auth/task/"+task.id, location.getLatitude()+"", location.getLongitude()+"" );
+                        }
+                    });
         }
-        return bestLocation;
+        else if(Build.VERSION.SDK_INT < Build.VERSION_CODES.R){
+            mLocationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null);
+        }
     }
 
     @Override
@@ -214,6 +207,7 @@ public class TaskDetailedActivity extends Activity {
         }
 
     }
+
 }
 
 
