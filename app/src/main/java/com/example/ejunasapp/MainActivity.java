@@ -283,36 +283,4 @@ public class MainActivity extends AppCompatActivity{
         myIntent.putExtra("task", (Serializable) task);
         startActivity(myIntent);
     }
-    //REGISTRACIJOS FORMOS PATIKRINIMAS---------------------------------------
-    private void showRegistration(View v)
-    {
-        Intent registrIntent = new Intent(this, RegistrationActivity.class);
-        startActivity(registrIntent);
-    }
-    //---------------TO NEREIKES VELIAU, CIA KAD PARODYTU POPWINDOW KAI PASPAUDI ANT PASIRINKTOS UZDUOTIES---------
-    /*
-    private void showTaskInformation(Task task, View v){
-        PopupWindow window = new PopupWindow(this);
-        LayoutInflater inflater = (LayoutInflater)
-                getSystemService(LAYOUT_INFLATER_SERVICE);
-        View popupView = inflater.inflate(R.layout.popup_task_window, null);
-        TextView textV = (TextView) popupView.findViewById(R.id.popupTaskName);
-        textV.setText(task.name);
-        textV = (TextView) popupView.findViewById(R.id.popupCategoryName);
-        textV.setText(task.category.name);
-        textV = (TextView) popupView.findViewById(R.id.popupLevelName);
-        textV.setText(task.level.name);
-        textV = (TextView) popupView.findViewById(R.id.popupTypeName);
-        textV.setText(task.type.name);
-        textV = (TextView) popupView.findViewById(R.id.popupAuthorName);
-        textV.setText(task.author);
-        textV = (TextView) popupView.findViewById(R.id.popupTaskText);
-        textV.setText(task.text);
-        int width = RelativeLayout.LayoutParams.WRAP_CONTENT;
-        int height = RelativeLayout.LayoutParams.WRAP_CONTENT;
-        PopupWindow popupWindow = new PopupWindow(popupView, width, height, true);
-
-        popupWindow.showAtLocation(v.getRootView(), Gravity.CENTER, 0, 0);
-    }
-    */
 }

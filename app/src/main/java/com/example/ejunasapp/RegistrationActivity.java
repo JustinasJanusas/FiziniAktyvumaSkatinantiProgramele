@@ -1,5 +1,7 @@
 package com.example.ejunasapp;
 
+import static com.example.ejunasapp.Tools.RestURL;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -66,31 +68,30 @@ public class RegistrationActivity extends Activity {
                 String pass = ((EditText) findViewById(R.id.password)).getText().toString().trim();
                 String repeatPass = ((EditText) findViewById(R.id.repeatPass)).getText().toString().trim();
 
-                boolean validEmail=isValidEmail(email);
-                boolean validPass=ValidatePassword(pass, repeatPass);
-                boolean ValidName=ValidNameSurname(name);
-                boolean ValidSurname=ValidNameSurname(surname);
+                boolean validEmail = isValidEmail(email);
+                boolean validPass = ValidatePassword(pass, repeatPass);
+                boolean ValidName = ValidNameSurname(name);
+                boolean ValidSurname = ValidNameSurname(surname);
 
                 if (!username.isEmpty() && !name.isEmpty() && !surname.isEmpty() && !email.isEmpty()
                         && !pass.isEmpty() && !repeatPass.isEmpty() && validEmail && validPass
-                && ValidName && ValidSurname) {
-                        new tryRegister().execute(Tools.RestURL + "auth/register",
+                        && ValidName && ValidSurname) {
+                        new tryRegister().execute(RestURL + "auth/register",
                                 username, email, pass, repeatPass, name, surname);
-                }
-                else if ((!username.isEmpty() && !name.isEmpty()
+                } else if ((!username.isEmpty() && !name.isEmpty()
                         && !surname.isEmpty() && !email.isEmpty()
                         && !pass.isEmpty() && !repeatPass.isEmpty() && (!ValidName || !ValidSurname)) ||
                         (!username.isEmpty() && !name.isEmpty()
-                        && !surname.isEmpty() && !email.isEmpty()
-                        && !pass.isEmpty() && !repeatPass.isEmpty()
-                        && !validEmail) ||
+                                && !surname.isEmpty() && !email.isEmpty()
+                                && !pass.isEmpty() && !repeatPass.isEmpty()
+                                && !validEmail) ||
                         (!username.isEmpty() && !name.isEmpty()
-                        && !surname.isEmpty() && !email.isEmpty()
-                                && !pass.isEmpty() && !repeatPass.isEmpty() && !validPass))
-                {
+                                && !surname.isEmpty() && !email.isEmpty()
+                                && !pass.isEmpty() && !repeatPass.isEmpty() && !validPass)) {
 
-                }
-                else showMessage("Įveskite visus registracijos duomenis");
+                } else showMessage("Įveskite visus registracijos duomenis");
+
+
         }
 
         private class tryRegister extends AsyncTask<String, Void, Boolean> {
@@ -119,13 +120,12 @@ public class RegistrationActivity extends Activity {
 
                                 if (ValidatePassword(pass, repeatPass) && isValidEmail(email)
                                         && ValidNameSurname(name) && ValidNameSurname(surname)) {
-                                     registerIn = WebAPI.attemptRegister(RestURL, username, name,
+                                        registerIn = WebAPI.attemptRegister(RestURL, username, name,
                                                 surname, email, pass, repeatPass);
-                                }
-                                else showMessage("Klaida!");
 
-                        }
-                        catch (Exception ex) {
+                                } else showMessage("Klaida!");
+
+                        } catch (Exception ex) {
                                 Log.e(TAG, ex.toString());
                         }
                         return registerIn;
@@ -139,8 +139,13 @@ public class RegistrationActivity extends Activity {
 
                         if (result == null) {
                                 showMessage("Serveris nepasiekiamas");
-                        } else  {
-                                showMessage("Registracija sėkminga, prisijunkite.");
+                        } else if(result != false){
+                                doRegister();
+                        }
+                        else
+                        {
+                                showMessage("Naudotojas su tokias duomenimis jau yra" +
+                                        " arba slaptažodis per paprastas");
                         }
                 }
         }
@@ -149,7 +154,7 @@ public class RegistrationActivity extends Activity {
 
                 Snackbar snack = Snackbar.make(findViewById(R.id.registrationS), msg, 3000);
                 View view = snack.getView();
-                FrameLayout.LayoutParams params =(FrameLayout.LayoutParams)view.getLayoutParams();
+                FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
                 params.gravity = Gravity.TOP;
                 view.setLayoutParams(params);
                 snack.show();
@@ -160,6 +165,7 @@ public class RegistrationActivity extends Activity {
                 startActivity(myIntent);
                 finish();
         }
+
         public boolean isValidEmail(String emailToText) {
 
                 if (emailToText.isEmpty()) {
@@ -170,30 +176,29 @@ public class RegistrationActivity extends Activity {
                         showMessage("Netaisyklingai įvestas el. paštas");
                         return false;
                 } else {
-
                         return true;
                 }
         }
-        public boolean ValidatePassword(String pass, String repeatpass)
-        {
+
+        public boolean ValidatePassword(String pass, String repeatpass) {
                 if (pass.isEmpty() || repeatpass.isEmpty()) {
                         showMessage("Neįvesti slaptažodžiai");
                         return false;
-                }  if (pass.length()<8) {
-                showMessage("Slaptažodį turi sudaryti daugiau nei 8 simboliai");
-                return false;
+                }
+                if (pass.length() < 8) {
+                        showMessage("Slaptažodį turi sudaryti daugiau nei 8 simboliai");
+                        return false;
                 }
 
                 if (!pass.equals(repeatpass)) {
                         showMessage("Įvesti slaptažodžiai nesutampa");
                         return false;
-                }else {
+                } else {
                         return true;
-
                 }
         }
-        public boolean ValidNameSurname(String nameSurname)
-        {
+
+        public boolean ValidNameSurname(String nameSurname) {
                 int len = nameSurname.length();
                 for (int i = 0; i < len; i++) {
                         // checks whether the character is not a letter
@@ -204,87 +209,6 @@ public class RegistrationActivity extends Activity {
                                 return false;
                         }
                 }
-
                 return true;
         }
-        //---------------------------------------------------------------------------
-        //GALBŪT REIKĖS---------------------------PATIKRINIMUI DĖL VIENODŲ USERNAMŲ IR EL PAŠTŲ
-        //nes jei yra vienodų su DB neduoda prireginti, reikia padaryt patikrinima ir parodyt useriui
-       /* static public List<User> usersList;
-        private void getUsers() {new getUsersUser().execute(Tools.RestURL+"auth/user");}
-        private class getUsersUser extends  AsyncTask<String, Void, List<User>> {
-                ProgressDialog actionProgressDialog =
-                        new ProgressDialog(RegistrationActivity.this);
-
-                protected List<User> doInBackground(String... str_param) {
-                        String RestURL = str_param[0];
-                        List<User> data = null;
-                        try {
-                                data = DataAPI.jsonToUsers(RestURL);
-                                Log.e("data", ""+data);
-                        } catch (Exception ex) {
-                                Log.e(TAG, ex.toString());
-                        }
-                        return data;
-                }
-
-                protected void onProgressUpdate(Void... progress) {
-                }
-
-                protected void onPostExecute(List<User> result) {
-                        actionProgressDialog.cancel();
-
-                        if (result != null) {
-                                usersList = result;
-                                Log.e("userList", ""+usersList);
-                        }
-                }
-        }
-
-                /*private class CustomAdapter extends BaseAdapter {
-
-                        private ArrayList<User> singleRow;
-                        private LayoutInflater thisInflater;
-
-                        public CustomAdapter(Context context, ArrayList<User> aRow) {
-
-                                this.singleRow = aRow;
-                                thisInflater = (LayoutInflater.from(context));
-
-                        }
-                        @Override
-                        public int getCount() {
-                                return singleRow.size();
-                        }
-
-                        @Override
-                        public Object getItem(int position) {
-                                return singleRow.get(position);
-                        }
-                        @Override
-                        public long getItemId(int position) {
-                                return position;
-                        }
-
-                        @Override
-                        public View getView(int position, View convertView, ViewGroup parent) {
-                                if (convertView == null) {
-                                      /*  convertView = thisInflater.inflate( R.layout.task_row, parent, false );
-                                        TextView nameText = convertView.findViewById(R.id.nameText);
-                                        TextView levelText = convertView.findViewById(R.id.levelText);
-                                        TextView typeText = convertView.findViewById(R.id.typeText);
-                                        ImageView imageView = convertView.findViewById(R.id.taskImage);
-                                        Task currentRow = (Task) getItem(position);
-                                        nameText.setText(currentRow.name);
-                                        levelText.setText(currentRow.level.name);
-                                        typeText.setText(currentRow.type.name);
-                                        byte[] imageBytes = Base64.getDecoder().decode(currentRow.base64_image);
-                                        Bitmap image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-                                        imageView.setImageBitmap(image);*/
-                               /* }
-                                return convertView;
-                        } */
-
-
-
-}
+ }
