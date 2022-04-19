@@ -128,7 +128,58 @@ public class WebAPI {
         }
         throw new Exception("Problem connecting to database");
     }
-
+    public static boolean attemptUpdatePass(String url, String pass, String newpassword, String old) throws Exception {
+        URL obj = new URL(url);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        String auth = "Bearer " + TokenPair.getAuthenticationToken();
+        con.setRequestProperty ("Authorization", auth);
+        con.setRequestMethod("PUT");
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(con.getOutputStream(), "UTF-8"));
+        writer.write("password="+pass + "&password2="+newpassword + "&old_password="+old);
+        writer.flush();
+        writer.close();
+        int response = con.getResponseCode();
+        Log.e("resp", " "+response);
+        if(response == HttpURLConnection.HTTP_OK){
+            BufferedReader reader =  new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
+            String line = reader.readLine();
+            if(line != null){
+                JSONObject json = new JSONObject(line);
+                return true;}
+            else
+                return false;
+        }
+        else if(response == HttpURLConnection.HTTP_UNAUTHORIZED){
+            return false;
+        }
+        throw new Exception("Problem connecting to database");
+    }
+    public static boolean attemptUpdateAccount(String url, String username, String firstname, String lastname, String email) throws Exception {
+        URL obj = new URL(url);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        String auth = "Bearer " + TokenPair.getAuthenticationToken();
+        con.setRequestProperty ("Authorization", auth);
+        con.setRequestMethod("PUT");
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(con.getOutputStream(), "UTF-8"));
+        writer.write("&username="+username + "&first_name="+firstname + "&last_name="+lastname + "&email="+email);
+        writer.flush();
+        writer.close();
+        int response = con.getResponseCode();
+        Log.e("resp", " "+response);
+        if(response == HttpURLConnection.HTTP_OK){
+            BufferedReader reader =  new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
+            String line = reader.readLine();
+            if(line != null){
+                JSONObject json = new JSONObject(line);
+                return true;}
+            else
+                return false;
+        }
+        else if(response == HttpURLConnection.HTTP_UNAUTHORIZED){
+            return false;
+        }
+        throw new Exception("Problem connecting to database");
+    }
     public static boolean getToken(String url) throws Exception {
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();

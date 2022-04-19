@@ -29,6 +29,8 @@
         <activity android:name=".RegistrationActivity"/>
         <activity android:name=".MainActivity"/>
         <activity android:name=".AccountActivity"/>
+        <activity android:name=".UpdateAccountActivity"/>
+        <activity android:name=".UpdatePassActivity"/>
     </application>
 
 </manifest>

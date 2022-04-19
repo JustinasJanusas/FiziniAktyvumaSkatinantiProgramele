@@ -32,6 +32,24 @@ public class AccountActivity extends Activity {
         ImageButton buttonBack = findViewById(R.id.accountBackButton);
         Button buttonLogout = findViewById(R.id.logoutButton);
         Button buttonDeleteAccount = findViewById(R.id.deleteAccountButton);
+        Button buttonUpdateAccout = findViewById(R.id.updateAccoutButton);
+        Button buttonUpdatePass = findViewById(R.id.updatePassButton);
+
+        buttonUpdateAccout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent updateAccountIntent = new Intent(AccountActivity.this, UpdateAccountActivity.class);
+                startActivity(updateAccountIntent);
+            }
+        });
+        buttonUpdatePass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent passIntent = new Intent(AccountActivity.this, UpdatePassActivity.class);
+                startActivity(passIntent);
+            }
+        });
+
         buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -23,6 +23,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Base64;
@@ -161,6 +162,7 @@ public class RegistrationActivity extends Activity {
         }
 
         private void doRegister() {
+                Toast.makeText(getApplicationContext(), "Registracija sėkminga, prisijunkite!", Toast.LENGTH_LONG).show();
                 Intent myIntent = new Intent(RegistrationActivity.this, LoginActivity.class);
                 startActivity(myIntent);
                 finish();

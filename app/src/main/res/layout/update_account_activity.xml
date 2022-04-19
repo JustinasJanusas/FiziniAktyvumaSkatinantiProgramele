@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp">
+
+    <TextView
+        android:id="@+id/nameText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="60dp"
+        android:text="Paskyros atnaujinimas"
+        android:textColor="@color/purple_700"
+        android:textSize="25dp"
+        android:textStyle="bold" />
+
+
+    <Button
+        android:id="@+id/btn1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/done"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/rounded_button"
+        android:text="Grįžti"
+        android:textColor="@color/white" />
+
+    <Button
+        android:id="@+id/done"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/Email"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/rounded_button"
+        android:text="atnaujinti"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:layout_below="@id/nameText"
+        android:layout_width="wrap_content"
+        android:paddingLeft="30dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_gravity="center_vertical"
+        android:textStyle="bold"
+        android:textSize="15dp"
+        android:text="Prisijungimo vardas: "
+        />
+    <FrameLayout
+        android:layout_centerInParent="true"
+        android:layout_width="330dp"
+        android:layout_height="40dp"
+        android:layout_below="@id/nameText"
+        android:layout_marginTop="50dp"
+        android:id="@+id/updateU"
+        android:background="@drawable/rounded_textview">
+        <EditText
+            android:id="@+id/updateUsername"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="5dp"
+            android:textSize="15dp" >
+            <requestFocus />
+        </EditText>
+
+    </FrameLayout>
+    <TextView
+        android:layout_below="@id/updateU"
+        android:layout_width="wrap_content"
+        android:paddingLeft="30dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center_vertical"
+        android:textStyle="bold"
+        android:textSize="15dp"
+        android:text="Vardas: "
+        />
+    <FrameLayout
+        android:layout_centerInParent="true"
+        android:layout_width="330dp"
+        android:layout_height="40dp"
+        android:layout_below="@id/updateU"
+        android:layout_marginTop="30dp"
+        android:id="@+id/registrationN"
+        android:background="@drawable/rounded_textview">
+        <EditText
+            android:id="@+id/updateName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="5dp"
+            android:textSize="15dp" >
+            <requestFocus />
+        </EditText>
+
+    </FrameLayout>
+
+    <TextView
+        android:layout_below="@id/registrationN"
+        android:layout_marginTop="10dp"
+        android:paddingLeft="30dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:textStyle="bold"
+        android:textSize="15dp"
+        android:text="Pavardė: "/>
+    <FrameLayout
+        android:layout_centerInParent="true"
+        android:layout_width="330dp"
+        android:layout_height="40dp"
+        android:layout_below="@id/registrationN"
+        android:layout_marginTop="30dp"
+        android:id="@+id/registrationS"
+        android:background="@drawable/rounded_textview">
+        <EditText
+            android:id="@+id/updateSurname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="5dp"
+            android:textSize="15dp" >
+            <requestFocus />
+        </EditText>
+
+    </FrameLayout>
+    <TextView
+        android:layout_below="@id/registrationS"
+        android:layout_marginTop="10dp"
+        android:paddingLeft="30dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:textStyle="bold"
+        android:textSize="15dp"
+        android:text="Elektroninis paštas: "/>
+    <FrameLayout
+        android:layout_centerInParent="true"
+        android:layout_width="330dp"
+        android:layout_height="40dp"
+        android:layout_below="@id/registrationS"
+        android:layout_marginTop="30dp"
+        android:id="@+id/Email"
+        android:background="@drawable/rounded_textview">
+
+        <EditText
+            android:id="@+id/updateemail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="5dp"
+            android:textSize="15dp" >
+
+            <requestFocus />
+        </EditText>
+    </FrameLayout>
+
+
+</RelativeLayout>

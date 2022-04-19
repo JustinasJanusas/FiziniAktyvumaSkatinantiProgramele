@@ -36,13 +36,27 @@
         android:textStyle="bold"
         android:textSize="20sp"/>
 
-        <Button
+    <Button
             android:layout_margin="10dp"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:text="Atsijungti"
             android:background="@drawable/red_button"
             android:id="@+id/logoutButton"/>
+    <Button
+        android:layout_margin="10dp"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="Redaguoti paskyrą"
+        android:background="@drawable/red_button"
+        android:id="@+id/updateAccoutButton"/>
+    <Button
+        android:layout_margin="10dp"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="Keisti slaptažodį"
+        android:background="@drawable/red_button"
+        android:id="@+id/updatePassButton"/>
     <Button
         android:layout_margin="10dp"
         android:layout_width="200dp"
