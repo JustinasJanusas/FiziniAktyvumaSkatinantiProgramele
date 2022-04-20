@@ -4,4 +4,6 @@
     <string name="cancel"><font color="black">Atšaukti</font></string>
     <string name="refresh_token">refreshToken</string>
     <string name="token_file">com.example.ejunasapp.TOKEN_FILE</string>
+    <string name="title_history">Istorija</string>
+    <string name="title_task_list">Užduotys</string>
 </resources>

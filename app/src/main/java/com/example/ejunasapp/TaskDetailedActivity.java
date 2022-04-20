@@ -135,7 +135,9 @@ public class TaskDetailedActivity extends Activity {
                 mySnackbar.show();
             }
             else if(result){
-                MainActivity.taskList = null;
+                MainActivity.doneTaskList = null;
+                MainActivity.favTaskList = null;
+                MainActivity.otherTaskList = null;
                 showPopupWindow(R.drawable.checkmark);
             }
             else{
