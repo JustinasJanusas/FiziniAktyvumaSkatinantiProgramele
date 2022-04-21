@@ -1,6 +1,8 @@
 package com.example.ejunasapp;
 
 public class User {
-    public String loginName;
-    public String email;
+    private String loginName;
+    private String email;
+    private String firstName;
+    private String lastName;
 }

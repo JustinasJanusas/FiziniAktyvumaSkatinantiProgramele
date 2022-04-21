@@ -5,6 +5,8 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -34,10 +36,12 @@ public class TaskDetailedActivity extends Activity {
     private String TAG = "TaskDetailedActivity";
     Button submitButton;
     Task task;
+    int type;
+
     final LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
-            new PostLocationTask().execute(Tools.RestURL+"api-auth/task/"+task.id, location.getLatitude()+"", location.getLongitude()+"" );
+            new PostLocationTask().execute(Tools.RestURL+"api-auth/task/other/"+task.id, location.getLatitude()+"", location.getLongitude()+"" );
         }
 
         @Override
@@ -61,8 +65,8 @@ public class TaskDetailedActivity extends Activity {
         setContentView(R.layout.detailed_taskinfo_window);
 
         if (getIntent().getExtras() != null) {
-
             task = (Task) getIntent().getSerializableExtra("task");
+            type = getIntent().getIntExtra("type", MainActivity.OTHER);
             TextView TextName = findViewById(R.id.nameText);
             TextName.setText(task.name);
 
@@ -97,13 +101,18 @@ public class TaskDetailedActivity extends Activity {
             }
         });
         submitButton = (Button) findViewById(R.id.done);
-        submitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                findViewById(R.id.done).setClickable(false);
-                locationPermissionCheck();
-            }
-        });
+        if(type == MainActivity.DONE) {
+            setDone();
+        }
+        else {
+            submitButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    findViewById(R.id.done).setClickable(false);
+                    locationPermissionCheck();
+                }
+            });
+        }
         }
     private class PostLocationTask extends AsyncTask<String, Void, Boolean>{
 
@@ -139,11 +148,14 @@ public class TaskDetailedActivity extends Activity {
                 MainActivity.favTaskList = null;
                 MainActivity.otherTaskList = null;
                 showPopupWindow(R.drawable.checkmark);
+                setDone();
+                type = MainActivity.DONE;
             }
             else{
                 showPopupWindow(R.drawable.cross);
+                submitButton.setClickable(true);
             }
-            findViewById(R.id.done).setClickable(true);
+
         }
     }
     private void showPopupWindow(int id){
@@ -171,6 +183,7 @@ public class TaskDetailedActivity extends Activity {
             requestPermissions(new String[] { Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION },
                                 PackageManager.PERMISSION_GRANTED);
         }
+
 
     }
     @SuppressLint("MissingPermission")
@@ -208,6 +221,14 @@ public class TaskDetailedActivity extends Activity {
             findViewById(R.id.done).setClickable(true);
         }
 
+    }
+    private void setDone(){
+        submitButton.setOnClickListener(null);
+        submitButton.setStateListAnimator(null);
+        submitButton.setBackgroundColor(Color.WHITE);
+
+        submitButton.setTextColor(getColor(R.color.green));
+        submitButton.setText(R.string.task_done);
     }
 
 }

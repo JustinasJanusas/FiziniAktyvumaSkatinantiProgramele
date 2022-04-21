@@ -6,4 +6,5 @@
     <string name="token_file">com.example.ejunasapp.TOKEN_FILE</string>
     <string name="title_history">Istorija</string>
     <string name="title_task_list">Užduotys</string>
+    <string name="task_done"><b>Įvykdyta \u2713</b></string>
 </resources>

@@ -209,7 +209,14 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Object o = taskListView.getItemAtPosition(position);
                 Task task = (Task) o;
-                showDetailedInformation(task, parent);
+                int t = type;
+                if(type != DONE){
+                    if(position < favTaskList.size())
+                        t = FAVORITE;
+                    else
+                        t = OTHER;
+                }
+                showDetailedInformation(task, parent, t);
 
             }
         });
@@ -377,9 +384,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         }
 
     }
-    private void showDetailedInformation(Task task, View v){
+    private void showDetailedInformation(Task task, View v, int type){
         Intent myIntent = new Intent(this, TaskDetailedActivity.class);
         myIntent.putExtra("task", (Serializable) task);
+        myIntent.putExtra("type", type);
         startActivity(myIntent);
     }
 }
