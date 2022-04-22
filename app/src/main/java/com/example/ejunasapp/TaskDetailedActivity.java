@@ -20,9 +20,12 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Button;
 
@@ -37,7 +40,7 @@ public class TaskDetailedActivity extends Activity {
     Button submitButton;
     Task task;
     int type;
-
+    CheckBox star;
     final LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
@@ -101,10 +104,22 @@ public class TaskDetailedActivity extends Activity {
             }
         });
         submitButton = (Button) findViewById(R.id.done);
+        star = findViewById(R.id.checkboxStar);
         if(type == MainActivity.DONE) {
             setDone();
+            star.setClickable(false);
+            star.setVisibility(View.INVISIBLE);
         }
         else {
+            if(type == MainActivity.FAVORITE)
+                star.setChecked(true);
+            star.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    buttonView.setClickable(false);
+                    changeTaskState();
+                }
+            });
             submitButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -158,6 +173,46 @@ public class TaskDetailedActivity extends Activity {
 
         }
     }
+    private class ChangeState extends AsyncTask<String, Void, Boolean>{
+
+
+        @Override
+        protected void onPreExecute(){
+            super.onPreExecute();
+        }
+        protected Boolean doInBackground(String... str_param){
+            String RestURL = str_param[0];
+            String method = str_param[1];
+            Boolean answer = false;
+            try {
+                answer = WebAPI.changeState(RestURL, method);
+            }
+            catch (Exception e){
+                Log.e(TAG, e.toString());
+                return false;
+            }
+            return answer;
+        }
+        protected void onProgressUpdate(Void... progress){}
+        protected void onPostExecute(Boolean result){
+            if(result){
+                MainActivity.doneTaskList = null;
+                MainActivity.favTaskList = null;
+                MainActivity.otherTaskList = null;
+                if(type == MainActivity.FAVORITE)
+                    type = MainActivity.OTHER;
+                else
+                    type = MainActivity.FAVORITE;
+                star.setClickable(true);
+            }
+            else{
+                Snackbar mySnackbar = Snackbar.make(findViewById(R.id.done),
+                        "Įvyko klaida", 3000);
+                mySnackbar.show();
+            }
+
+        }
+    }
     private void showPopupWindow(int id){
         LayoutInflater inflater = (LayoutInflater)
                 getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -198,7 +253,7 @@ public class TaskDetailedActivity extends Activity {
                         @Override
                         public void accept(Location location) {
                             // code
-                            new PostLocationTask().execute(Tools.RestURL+"api-auth/task/"+task.id, location.getLatitude()+"", location.getLongitude()+"" );
+                            new PostLocationTask().execute(Tools.RestURL+"api-auth/task/other/"+task.id, location.getLatitude()+"", location.getLongitude()+"" );
                         }
                     });
         }
@@ -230,7 +285,12 @@ public class TaskDetailedActivity extends Activity {
         submitButton.setTextColor(getColor(R.color.green));
         submitButton.setText(R.string.task_done);
     }
-
+    private void changeTaskState(){
+        if(star.isChecked())
+            new ChangeState().execute(Tools.RestURL+"api-auth/task/inprogress/"+task.id, "POST");
+        else
+            new ChangeState().execute(Tools.RestURL+"api-auth/task/inprogress/"+task.id, "DELETE");
+    }
 }
 
 

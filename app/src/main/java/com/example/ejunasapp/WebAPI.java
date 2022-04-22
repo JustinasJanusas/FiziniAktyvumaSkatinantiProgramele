@@ -49,6 +49,27 @@ public class WebAPI {
 
         return null;
     }
+    public static Boolean changeState(String url, String method)
+            throws Exception{
+        URL obj = new URL(url);
+
+        HttpURLConnection con = (HttpURLConnection)
+                obj.openConnection();
+        String auth = "Bearer " + TokenPair.getAuthenticationToken();
+
+        con.setRequestProperty ("Authorization", auth);
+        con.setRequestMethod(method);
+
+        int responseCode = con.getResponseCode();
+
+        if((responseCode == HttpURLConnection.HTTP_CREATED && method.equals("POST")) ||
+                (responseCode == HttpURLConnection.HTTP_NO_CONTENT) && method.equals("DELETE")){
+
+            return true;
+        }
+
+        return false;
+    }
     public static boolean sendLocation(String url, float latitude, float longtitude) throws Exception {
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -139,7 +160,6 @@ public class WebAPI {
         writer.flush();
         writer.close();
         int response = con.getResponseCode();
-        Log.e("resp", " "+response);
         if(response == HttpURLConnection.HTTP_OK){
             BufferedReader reader =  new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
             String line = reader.readLine();
@@ -165,7 +185,6 @@ public class WebAPI {
         writer.flush();
         writer.close();
         int response = con.getResponseCode();
-        Log.e("resp", " "+response);
         if(response == HttpURLConnection.HTTP_OK){
             BufferedReader reader =  new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
             String line = reader.readLine();

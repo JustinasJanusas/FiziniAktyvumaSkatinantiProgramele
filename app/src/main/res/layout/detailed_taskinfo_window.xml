@@ -61,6 +61,7 @@
         android:text="Atlikti"
         android:textColor="@color/white" />
     <CheckBox
+        android:id="@+id/checkboxStar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:button="@drawable/star_checkbox"

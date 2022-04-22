@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -22,6 +23,7 @@ import androidx.annotation.Nullable;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.net.HttpURLConnection;
+import java.util.List;
 
 public class AccountActivity extends Activity {
     String TAG = "AccountAcitivity";
@@ -78,6 +80,46 @@ public class AccountActivity extends Activity {
 
             }
         });
+        if(Tools.user == null)
+            new getUser().execute(Tools.RestURL+"auth/user");
+        else
+            showUser();
+    }
+    private class getUser extends AsyncTask<String, Void, User>{
+
+        ProgressDialog actionProgressDialog =
+                new ProgressDialog(AccountActivity.this);
+        int type = -1;
+        @Override
+        protected void onPreExecute(){
+            actionProgressDialog.setMessage("Gaunami duomenys...");
+            actionProgressDialog.show();
+            actionProgressDialog.setCancelable(false);
+            super.onPreExecute();
+        }
+
+        protected User doInBackground(String... str_param){
+            String RestURL = str_param[0];
+            List<User> data = null;
+            try{
+                java.lang.reflect.Type type =
+                        new com.google.gson.reflect.TypeToken<List<User>>()
+                        {}.getType();
+                data = (List<User>) DataAPI.jsonObjectToData(RestURL, type);
+
+            }
+            catch (Exception ex){
+                Log.e(TAG, ex.toString());
+            }
+            return data.get(0);
+        }
+        protected void onProgressUpdate(Void... progress){}
+        protected void onPostExecute(User result){
+            super.onPostExecute(result);
+            actionProgressDialog.cancel();
+            Tools.user = result;
+            showUser();
+        }
     }
     private class tryLogout extends AsyncTask<String, Void, Integer> {
 
@@ -128,5 +170,9 @@ public class AccountActivity extends Activity {
         editor.putString(getString(R.string.refresh_token), TokenPair.getRefreshToken());
         editor.commit();
         startActivity(logoutIntent);
+    }
+    private  void showUser(){
+        TextView textView = findViewById(R.id.accountNameText);
+        textView.setText(Tools.user.first_name+" "+Tools.user.last_name);
     }
 }

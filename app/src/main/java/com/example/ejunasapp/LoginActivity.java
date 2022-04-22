@@ -50,7 +50,14 @@ public class LoginActivity extends Activity {
                 finish();
             }
         });
-
+        findViewById(R.id.remindPasswordButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(LoginActivity.this, RemindPasswordActivity.class);
+                startActivity(myIntent);
+                finish();
+            }
+        });
     }
     private void onLoginClick(){
         String name = ((EditText) findViewById(R.id.loginNameText)).getText().toString();

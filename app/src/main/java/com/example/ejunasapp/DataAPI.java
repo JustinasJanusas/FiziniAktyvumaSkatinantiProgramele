@@ -21,5 +21,16 @@ public class DataAPI {
         }
         return data;
     }
+    public static List<?> jsonObjectToData(String RestURL, Type type) throws Exception{
 
+        List<?> data = new ArrayList<>();
+        String response = WebAPI.getData(RestURL);
+        if(response.length() > 0){
+            Gson gson;
+            gson = new Gson();
+
+            data = gson.fromJson("["+response+"]", type);
+        }
+        return data;
+    }
 }
