@@ -29,6 +29,14 @@ public class UpdateAccountActivity extends Activity {
         setContentView(R.layout.update_account_activity);
         Button backButton = findViewById(R.id.btn1);
         Button updateAccountButton = findViewById(R.id.done);
+        EditText Updateusername = (EditText) findViewById(R.id.updateUsername);
+        EditText Updatename = (EditText) findViewById(R.id.updateName);
+        EditText Updatesurname = (EditText) findViewById(R.id.updateSurname);
+        EditText Updateemail = (EditText) findViewById(R.id.updateemail);
+        Updateusername.setText(Tools.user.username);
+        Updatename.setText(Tools.user.first_name);
+        Updatesurname.setText(Tools.user.last_name);
+        Updateemail.setText(Tools.user.email);
         updateAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -38,8 +46,7 @@ public class UpdateAccountActivity extends Activity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent myIntent = new Intent(UpdateAccountActivity.this, AccountActivity.class);
-                startActivity(myIntent);
+
                 finish();
             }
         });

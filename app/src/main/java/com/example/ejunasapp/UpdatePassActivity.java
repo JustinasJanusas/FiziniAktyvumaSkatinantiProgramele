@@ -39,8 +39,7 @@ public class UpdatePassActivity extends Activity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent myIntent = new Intent(UpdatePassActivity.this, AccountActivity.class);
-                startActivity(myIntent);
+
                 finish();
             }
         });
