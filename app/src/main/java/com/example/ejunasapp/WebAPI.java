@@ -241,5 +241,19 @@ public class WebAPI {
         writer.close();
         return con.getResponseCode();
     }
+    public static boolean attempResetPassword(String url, String email) throws Exception {
+        URL obj = new URL(url);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        con.setRequestMethod("POST");
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(con.getOutputStream(), "UTF-8"));
+        writer.write("email="+email );
+        writer.flush();
+        writer.close();
+        int response = con.getResponseCode();
+        if(response == HttpURLConnection.HTTP_OK){
+
+                return true;}
+        return false;
+    }
 }
 

@@ -1,8 +1,11 @@
 package com.example.ejunasapp;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.Gravity;
 import android.view.View;
@@ -13,6 +16,7 @@ import android.widget.FrameLayout;
 import com.google.android.material.snackbar.Snackbar;
 
 public class RemindPasswordActivity extends Activity {
+    private static String TAG = "RemindPasswordActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -37,7 +41,7 @@ public class RemindPasswordActivity extends Activity {
     private void onRemindClick(){
         String email = ((EditText) findViewById(R.id.remindPasswordEmailText)).getText().toString();
         if(isValidEmail(email)){
-            //new LoginActivity.tryRemind().execute(Tools.RestURL+"auth/login", name, pass);
+            new tryResetPassword().execute(Tools.RestURL+"auth/reset_password", email);
         }
     }
     public boolean isValidEmail(String emailToText) {
@@ -61,6 +65,47 @@ public class RemindPasswordActivity extends Activity {
         params.gravity = Gravity.TOP;
         view.setLayoutParams(params);
         mySnackbar.show();
+    }
+    private class tryResetPassword extends AsyncTask<String, Void, Boolean> {
+
+        ProgressDialog actionProgressDialog =
+                new ProgressDialog(RemindPasswordActivity.this);
+
+        @Override
+        protected void onPreExecute(){
+            actionProgressDialog.setMessage("Jungiamasi...");
+            actionProgressDialog.show();
+            actionProgressDialog.setCancelable(false);
+            super.onPreExecute();
+        }
+
+        protected Boolean doInBackground(String... str_param){
+            String RestURL = str_param[0];
+            String email = str_param[1];
+            Boolean passwordReset = null;
+            try{
+                passwordReset = WebAPI.attempResetPassword(RestURL, email);
+
+            }
+            catch (Exception ex){
+                Log.e(TAG, ex.toString());
+            }
+            return passwordReset;
+        }
+        protected void onProgressUpdate(Void... progress){}
+        protected void onPostExecute(Boolean result){
+            actionProgressDialog.cancel();
+            if(result == null){
+                showMessage("Serveris nepasiekiamas");
+            }
+            else if(result){
+                showMessage("Patikrinkite savo el paštą");;
+            }
+            else{
+
+                showMessage("Įvestas blogas el. paštas");
+            }
+        }
     }
 }
 
