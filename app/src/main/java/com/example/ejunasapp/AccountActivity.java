@@ -7,22 +7,20 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.net.HttpURLConnection;
+import java.util.Base64;
 import java.util.List;
 
 public class AccountActivity extends Activity {
@@ -176,6 +174,12 @@ public class AccountActivity extends Activity {
     }
     private  void showUser(){
         TextView textView = findViewById(R.id.accountNameText);
-        textView.setText(Tools.user.first_name+" "+Tools.user.last_name);
+        textView.setText(Tools.user.user.first_name+" "+Tools.user.user.last_name);
+        ShapeableImageView shapeableImageView = findViewById(R.id.accountImage);
+        if(Tools.user.base64_picture != null && Tools.user.base64_picture != "") {
+
+            byte[] imageBytes = Base64.getDecoder().decode(Tools.user.base64_picture);
+            shapeableImageView.setImageBitmap( BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length));
+        }
     }
 }

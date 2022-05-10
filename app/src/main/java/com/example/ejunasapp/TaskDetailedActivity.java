@@ -89,9 +89,10 @@ public class TaskDetailedActivity extends Activity {
             TaskText.setText(task.text);
 
             ImageView imageView = findViewById(R.id.taskImage);
-            byte[] imageBytes = Base64.getDecoder().decode(task.base64_image);
-            Bitmap image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-            imageView.setImageBitmap(image);
+            int resID = getResources().getIdentifier("category_"+task.category.id, "drawable", getPackageName());
+            if(resID == 0)
+                resID = R.drawable.category_other;
+            imageView.setImageResource(resID);
 
         }
         Button buttonReturn = (Button) findViewById(R.id.btn1);

@@ -10,5 +10,5 @@ public class Task implements Serializable{
     public TaskItem type;
     public TaskItem level;
     public String author;
-    public String base64_image;
+    public String base64_picture;
 }

@@ -1,22 +1,16 @@
 package com.example.ejunasapp;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.Layout;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,20 +18,13 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
-import android.widget.Button;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.imageview.ShapeableImageView;
-
-import org.w3c.dom.Text;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -45,7 +32,6 @@ import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.zip.Inflater;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener{
     private String TAG = "MainActivity";
@@ -79,6 +65,59 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 startActivity(accountIntent);
             }
         });
+        if(Tools.user == null)
+            new getUser().execute(Tools.RestURL+"auth/user");
+        else
+            showUser();
+    }
+    private class getUser extends AsyncTask<String, Void, User>{
+
+        ProgressDialog actionProgressDialog =
+                new ProgressDialog(MainActivity.this);
+        int type = -1;
+        @Override
+        protected void onPreExecute(){
+            actionProgressDialog.setMessage("Gaunami duomenys...");
+            actionProgressDialog.show();
+            actionProgressDialog.setCancelable(false);
+            super.onPreExecute();
+        }
+
+        protected User doInBackground(String... str_param){
+
+            String RestURL = str_param[0];
+            List<User> data = null;
+            try{
+                java.lang.reflect.Type type =
+                        new com.google.gson.reflect.TypeToken<List<User>>()
+                        {}.getType();
+                data = (List<User>) DataAPI.jsonObjectToData(RestURL, type);
+
+            }
+            catch (Exception ex){
+                Log.e(TAG, ex.toString());
+            }
+
+            return data.get(0);
+        }
+        protected void onProgressUpdate(Void... progress){}
+        protected void onPostExecute(User result){
+
+            super.onPostExecute(result);
+            actionProgressDialog.cancel();
+            Tools.user = result;
+            showUser();
+
+        }
+    }
+    private  void showUser(){
+
+        ShapeableImageView shapeableImageView = findViewById(R.id.accountImageButton);
+        if(Tools.user.base64_picture != null && Tools.user.base64_picture != "") {
+
+            byte[] imageBytes = Base64.getDecoder().decode(Tools.user.base64_picture);
+            shapeableImageView.setImageBitmap( BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length));
+        }
     }
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -337,9 +376,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 nameText.setText(currentRow.name);
                 levelText.setText(currentRow.level.name);
                 typeText.setText(currentRow.type.name);
-                byte[] imageBytes = Base64.getDecoder().decode(currentRow.base64_image);
-                Bitmap image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-                imageView.setImageBitmap(image);
+                int resID = getResources().getIdentifier("category_"+currentRow.category.id, "drawable", getPackageName());
+                if(resID == 0)
+                    resID = R.drawable.category_other;
+                imageView.setImageResource(resID);
+
             }
             return convertView;
         }

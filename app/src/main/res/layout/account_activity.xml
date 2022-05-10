@@ -17,7 +17,7 @@
         android:clickable="true"
         />
     <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/accountImageButton"
+        android:id="@+id/accountImage"
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:src="@drawable/no_profile_picture"
