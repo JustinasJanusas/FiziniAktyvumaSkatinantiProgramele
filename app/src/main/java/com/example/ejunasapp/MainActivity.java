@@ -1,13 +1,16 @@
 package com.example.ejunasapp;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,6 +28,7 @@ import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.android.material.navigation.NavigationView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -49,7 +53,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     static public int levelSelected = 0;
      private Boolean firstTime = true;
      private int selectedTab = 0;
-    BottomNavigationView bottomNavigationView;
+    private BottomNavigationView bottomNavigationView;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,18 +63,40 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
         bottomNavigationView.setSelectedItemId(R.id.navigation_tasks);
-        ShapeableImageView accountButton = findViewById(R.id.accountImageButton);
-        accountButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent accountIntent = new Intent(MainActivity.this, AccountActivity.class);
-                startActivity(accountIntent);
-            }
-        });
+
         if(Tools.user == null)
             new getUser().execute(Tools.RestURL+"auth/user");
         else
             showUser();
+        DrawerLayout drawerLayout = findViewById(R.id.mainActivityDrawerLayout);
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this,
+                        drawerLayout, findViewById(R.id.customActionBar),
+                R.string.open_drawer, R.string.close_drawer);
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        actionBarDrawerToggle.syncState();
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+                    switch (item.getItemId()){
+                        case R.id.drawer_leaderboard:
+                            Intent intent = new Intent(MainActivity.this, LeaderboardActivity.class);
+                            startActivity(intent);
+                            break;
+                        case R.id.drawer_friends:
+                            break;
+                        case R.id.drawer_account:
+                            Intent accountIntent = new Intent(MainActivity.this, AccountActivity.class);
+                            startActivity(accountIntent);
+                            break;
+                        default:
+                            return false;
+                    }
+                    return true;
+            }
+        });
+
     }
     private class getUser extends AsyncTask<String, Void, User>{
 
@@ -112,12 +140,14 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     }
     private  void showUser(){
 
-        ShapeableImageView shapeableImageView = findViewById(R.id.accountImageButton);
+        ShapeableImageView shapeableImageView = findViewById(R.id.drawerAccountImage);
         if(Tools.user.base64_picture != null && Tools.user.base64_picture != "") {
 
             byte[] imageBytes = Base64.getDecoder().decode(Tools.user.base64_picture);
             shapeableImageView.setImageBitmap( BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length));
         }
+        TextView textView = findViewById(R.id.drawerAccountNameText);
+        textView.setText(Tools.user.user.first_name+ " "+Tools.user.user.last_name);
     }
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {

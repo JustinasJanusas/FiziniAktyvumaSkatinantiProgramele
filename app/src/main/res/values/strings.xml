@@ -8,4 +8,6 @@
     <string name="title_task_list">Užduotys</string>
     <string name="task_done"><b>Įvykdyta \u2713</b></string>
     <string name="remind_password_text"><u><b>Pamiršote slaptažodį?</b></u></string>
+    <string name="open_drawer">Atidaryti</string>
+    <string name="close_drawer">Uždaryti</string>
 </resources>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="Lyderių lentelė"
+        android:id="@+id/drawer_leaderboard"
+        android:icon="@drawable/menu_icon_leaderboard"
+        />
+    <item android:title="Draugai"
+        android:id="@+id/drawer_friends"
+        android:icon="@drawable/menu_icon_friends"/>
+    <item android:title="Paskyros nustatymai"
+        android:id="@+id/drawer_account"
+        android:icon="@drawable/menu_item_account"/>
+</menu>

@@ -32,6 +32,7 @@
         <activity android:name=".UpdateAccountActivity"/>
         <activity android:name=".UpdatePassActivity"/>
         <activity android:name=".RemindPasswordActivity"/>
+        <activity android:name=".LeaderboardActivity"/>
     </application>
 
 </manifest>
