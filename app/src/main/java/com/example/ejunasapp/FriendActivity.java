@@ -48,8 +48,6 @@ public class FriendActivity extends AppCompatActivity {
         });
         new getFriends().execute(Tools.RestURL+"auth/friends");
 
-
-
     }
     private class getFriends extends AsyncTask<String, Void, List<User>> {
 
@@ -97,8 +95,32 @@ public class FriendActivity extends AppCompatActivity {
         listAdapter = new CustomAdapter(getApplicationContext(), (ArrayList) FriendList, R.layout.friend_row);
         ListView friendListView = findViewById(R.id.friendsListView);
         friendListView.setAdapter(listAdapter);
-        friendListView.setClickable(false);
+       // friendListView.setClickable(false);
+        Button buttonDeletefriend =(Button)findViewById(R.id.deleteFriendButton);
+
+        friendListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Object o = friendListView.getItemAtPosition(position);
+                User user = (User) o;
+                int userId = ((User) o).id;
+                new AlertDialog.Builder(FriendActivity.this)
+                        .setTitle("")
+                        .setMessage("Ar tikrai norite pašalinti draugą?")
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setNegativeButton(R.string.cancel, null)
+                        .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                new getFriends().execute(Tools.RestURL + "auth/friend/" + userId + "/delete", "DELETE");
+                            }}).show();
+
+
+
+
+            }
+        });
     }
+
     private class CustomAdapter extends BaseAdapter {
 
         private ArrayList<User> singleRow;
@@ -130,7 +152,7 @@ public class FriendActivity extends AppCompatActivity {
         public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
                 convertView = thisInflater.inflate( rowID, parent, false );
-                convertView.setClickable(false);
+                //convertView.setClickable(false);
                 TextView nameText = convertView.findViewById(R.id.userRowNameText);
                 TextView scoreText = convertView.findViewById(R.id.userScoreText);
                 TextView rowNumber = convertView.findViewById(R.id.rowNumber);
@@ -140,11 +162,13 @@ public class FriendActivity extends AppCompatActivity {
                 User currentRow = (User) getItem(position);
                 nameText.setText(currentRow.user.first_name+ " "+currentRow.user.last_name);
                 scoreText.setText(currentRow.points+"");
+                int id = currentRow.id;
                 if(currentRow.base64_picture != null && currentRow.base64_picture != "") {
 
                     byte[] imageBytes = Base64.getDecoder().decode(currentRow.base64_picture);
                     imageView.setImageBitmap( BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length));
                 }
+
 
             }
             return convertView;
@@ -152,4 +176,3 @@ public class FriendActivity extends AppCompatActivity {
 
     }
 }
-
