@@ -33,6 +33,7 @@
         <activity android:name=".UpdatePassActivity"/>
         <activity android:name=".RemindPasswordActivity"/>
         <activity android:name=".LeaderboardActivity"/>
+        <activity android:name=".FriendActivity"/>
     </application>
 
 </manifest>

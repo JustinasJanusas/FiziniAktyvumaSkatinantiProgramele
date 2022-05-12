@@ -85,6 +85,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                             startActivity(intent);
                             break;
                         case R.id.drawer_friends:
+                            Intent friends = new Intent(MainActivity.this, FriendActivity.class);
+                            startActivity(friends);
                             break;
                         case R.id.drawer_account:
                             Intent accountIntent = new Intent(MainActivity.this, AccountActivity.class);
