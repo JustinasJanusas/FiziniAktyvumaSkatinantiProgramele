@@ -158,6 +158,7 @@ public class AccountActivity extends Activity {
     }
     private void logout(){
         Intent logoutIntent = new Intent(this, LoginActivity.class);
+        Tools.user = null;
         MainActivity.otherTaskList = null;
         MainActivity.favTaskList = null;
         MainActivity.doneTaskList = null;

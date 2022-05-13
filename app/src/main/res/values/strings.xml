@@ -10,4 +10,6 @@
     <string name="remind_password_text"><u><b>Pamiršote slaptažodį?</b></u></string>
     <string name="open_drawer">Atidaryti</string>
     <string name="close_drawer">Uždaryti</string>
+    <string name="title_friends">Draugų sąrašas</string>
+    <string name="title_requests">Draugų užklausos</string>
 </resources>

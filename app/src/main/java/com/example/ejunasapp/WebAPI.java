@@ -61,9 +61,9 @@ public class WebAPI {
         con.setRequestMethod(method);
 
         int responseCode = con.getResponseCode();
-
         if((responseCode == HttpURLConnection.HTTP_CREATED && method.equals("POST")) ||
-                (responseCode == HttpURLConnection.HTTP_NO_CONTENT) && method.equals("DELETE")){
+                (responseCode == HttpURLConnection.HTTP_NO_CONTENT && method.equals("DELETE")) ||
+            responseCode == HttpURLConnection.HTTP_OK){
 
             return true;
         }
