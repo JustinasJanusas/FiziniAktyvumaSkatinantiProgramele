@@ -2,6 +2,7 @@ package com.example.ejunasapp;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -90,7 +91,9 @@ public class FriendActivity extends AppCompatActivity {
                 builder.setPositiveButton("Pridėti", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        new AddFriend().execute(Tools.RestURL+"auth/user/"+input.getText(), "POST", "0");
+                        if(!input.getText().toString().trim().equals("")) {
+                            new getFriends().execute(Tools.RestURL + "auth/users?search=" + input.getText(), "2");
+                        }
                     }
                 });
                 builder.setNegativeButton("Atšaukti", new DialogInterface.OnClickListener() {
@@ -130,7 +133,6 @@ public class FriendActivity extends AppCompatActivity {
                         new com.google.gson.reflect.TypeToken<List<User>>()
                         {}.getType();
                 data = (List<User>) DataAPI.jsonToData(RestURL, type);
-
             }
             catch (Exception ex){ }
 
@@ -150,6 +152,31 @@ public class FriendActivity extends AppCompatActivity {
                 else if (type == 1){
                     requestList = result;
                     showUsers(requestList, R.layout.request_row, 1);
+                }
+                else if(type == 2){
+                    Dialog dialog = new Dialog(FriendActivity.this);
+                    dialog.setContentView(R.layout.popup_listview_layout);
+                    dialog.setTitle("Pasirinkite draugą");
+                    CustomAdapter listAdapter;
+                    listAdapter = new CustomAdapter(getApplicationContext(), (ArrayList) result, R.layout.popup_row, 2);
+                    ListView friendListView = dialog.findViewById(R.id.popupListView);
+                    friendListView.setAdapter(listAdapter);
+                    Button cancelButton = dialog.findViewById(R.id.cancelButton);
+                    cancelButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.cancel();
+                        }
+                    });
+                    friendListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            Object o = friendListView.getItemAtPosition(position);
+                            User u = (User) o;
+                            new AddFriend().execute(Tools.RestURL+"auth/user/"+u.id, "POST", "0");
+                            dialog.cancel();
+                        }
+                    });
+                    dialog.show();
                 }
             }
         }
@@ -251,20 +278,24 @@ public class FriendActivity extends AppCompatActivity {
                 convertView = thisInflater.inflate( rowID, parent, false );
                 //convertView.setClickable(false);
                 TextView nameText = convertView.findViewById(R.id.userRowNameText);
-                TextView scoreText = convertView.findViewById(R.id.userScoreText);
-                TextView rowNumber = convertView.findViewById(R.id.rowNumber);
-
-                rowNumber.setText((position+1)+"");
                 ShapeableImageView imageView = convertView.findViewById(R.id.rowAccountImage);
                 User currentRow = (User) getItem(position);
                 nameText.setText(currentRow.user.first_name+ " "+currentRow.user.last_name);
-                scoreText.setText(currentRow.points+"");
-                int id = currentRow.id;
                 if(currentRow.base64_picture != null && currentRow.base64_picture != "") {
 
                     byte[] imageBytes = Base64.getDecoder().decode(currentRow.base64_picture);
                     imageView.setImageBitmap( BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length));
                 }
+                if(type == 2){
+                    TextView usernameText = convertView.findViewById(R.id.usernameText);
+                    usernameText.setText(currentRow.user.username);
+                    return convertView;
+                }
+                TextView rowNumber = convertView.findViewById(R.id.rowNumber);
+                TextView scoreText = convertView.findViewById(R.id.userScoreText);
+                rowNumber.setText((position+1)+"");
+                scoreText.setText(currentRow.points+"");
+
                 int userId = currentRow.id;
                 if(type == 0) {
                     Button buttonDeletefriend = (Button) convertView.findViewById(R.id.deleteFriendButton);

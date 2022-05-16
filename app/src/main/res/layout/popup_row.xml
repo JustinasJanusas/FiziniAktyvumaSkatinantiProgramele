@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/userRow">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/rowAccountImage"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="10dp"
+        android:background="@android:color/transparent"
+        android:clickable="true"
+        android:padding="2dp"
+        android:src="@drawable/no_profile_picture"
+        app:shapeAppearance="@style/circular"
+        app:strokeColor="@color/white"
+        app:strokeWidth="2dp" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/rowAccountImage"
+        android:layout_centerVertical="true"
+        android:orientation="vertical">
+    <TextView
+        android:id="@+id/userRowNameText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:textStyle="bold"
+        android:textColor="@color/purple_700"
+
+        />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:id="@+id/usernameText"/>
+
+    </LinearLayout>
+
+</RelativeLayout>
