@@ -100,6 +100,15 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         });
 
     }
+    @Override
+    protected void onRestart(){
+        super.onRestart();
+        if(otherTaskList == null) {
+            categoryId = -2;
+            levelId = -2;
+            getFilteredTasks();
+        }
+    }
     private class getUser extends AsyncTask<String, Void, User>{
 
         ProgressDialog actionProgressDialog =

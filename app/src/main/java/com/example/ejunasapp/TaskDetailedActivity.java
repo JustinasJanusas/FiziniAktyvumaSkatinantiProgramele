@@ -99,9 +99,7 @@ public class TaskDetailedActivity extends Activity {
         buttonReturn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent returnButton = new Intent(TaskDetailedActivity.this, MainActivity.class);
-                returnButton.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(returnButton);
+                finish();
             }
         });
         submitButton = (Button) findViewById(R.id.done);
@@ -291,6 +289,8 @@ public class TaskDetailedActivity extends Activity {
             new ChangeState().execute(Tools.RestURL+"api-auth/task/inprogress/"+task.id, "POST");
         else
             new ChangeState().execute(Tools.RestURL+"api-auth/task/inprogress/"+task.id, "DELETE");
+        MainActivity.otherTaskList = null;
+        MainActivity.favTaskList = null;
     }
 }
 
