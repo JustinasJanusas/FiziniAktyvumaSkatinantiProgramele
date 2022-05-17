@@ -8,6 +8,7 @@
 
     <!-- usesCleartextTraffic="true" YRA LAIKINAI!!!!!!!!!! -->
     <application
+
         android:usesCleartextTraffic="true"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -18,22 +19,32 @@
         <service android:name="TokenService" android:stopWithTask="true"/>
         <activity
             android:name=".LoginActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".TaskDetailedActivity"/>
-        <activity android:name=".RegistrationActivity"/>
-        <activity android:name=".MainActivity"/>
-        <activity android:name=".AccountActivity"/>
-        <activity android:name=".UpdateAccountActivity"/>
-        <activity android:name=".UpdatePassActivity"/>
-        <activity android:name=".RemindPasswordActivity"/>
-        <activity android:name=".LeaderboardActivity"/>
-        <activity android:name=".FriendActivity"/>
+        <activity android:name=".TaskDetailedActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".RegistrationActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".AccountActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".UpdateAccountActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".UpdatePassActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".RemindPasswordActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".LeaderboardActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".FriendActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>
