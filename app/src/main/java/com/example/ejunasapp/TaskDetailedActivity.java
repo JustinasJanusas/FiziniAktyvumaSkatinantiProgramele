@@ -4,9 +4,11 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -84,10 +86,18 @@ public class TaskDetailedActivity extends Activity {
 
             TextView Author = findViewById(R.id.authorText);
             Author.setText(task.author);
-
             TextView TaskText = findViewById(R.id.tasktext);
-            TaskText.setText(task.text);
+            if(task.base64_picture != null && !task.base64_picture.equals("")){
+                TaskText.setVisibility(View.GONE);
+                ImageView image = findViewById(R.id.detailedTaskImage);
+                byte[] imageBytes = Base64.getDecoder().decode(task.base64_picture);
+                image.setImageBitmap( BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length));
+                image.setVisibility(View.VISIBLE);
+            }
+            else {
 
+                TaskText.setText(task.text);
+            }
             ImageView imageView = findViewById(R.id.taskImage);
             int resID = getResources().getIdentifier("category_"+task.category.id, "drawable", getPackageName());
             if(resID == 0)
@@ -130,10 +140,14 @@ public class TaskDetailedActivity extends Activity {
         }
     private class PostLocationTask extends AsyncTask<String, Void, Boolean>{
 
-
+        ProgressDialog actionProgressDialog =
+                new ProgressDialog(TaskDetailedActivity.this);
         @Override
         protected void onPreExecute(){
             super.onPreExecute();
+            actionProgressDialog.setMessage("Siunčiama vietovė...");
+            actionProgressDialog.show();
+            actionProgressDialog.setCancelable(false);
         }
         protected Boolean doInBackground(String... str_param){
             String RestURL = str_param[0];
@@ -151,7 +165,7 @@ public class TaskDetailedActivity extends Activity {
         }
         protected void onProgressUpdate(Void... progress){}
         protected void onPostExecute(Boolean result){
-
+            actionProgressDialog.cancel();
             if(result == null){
                 Snackbar mySnackbar = Snackbar.make(findViewById(R.id.done),
                         "Įvyko klaida", 3000);
@@ -224,13 +238,11 @@ public class TaskDetailedActivity extends Activity {
         popupWindow.showAtLocation(findViewById(R.id.done), Gravity.CENTER, 0, 0);
     }
     private void locationPermissionCheck(){
-
         if (ContextCompat.checkSelfPermission(
                 getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
                 getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED) {
-
             getLocation();
         }
         else {
@@ -242,22 +254,27 @@ public class TaskDetailedActivity extends Activity {
     }
     @SuppressLint("MissingPermission")
     private void getLocation() {
-        LocationManager mLocationManager = (LocationManager)getApplicationContext().getSystemService(LOCATION_SERVICE);
+        LocationManager mLocationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+
             mLocationManager.getCurrentLocation(
-                    LocationManager.GPS_PROVIDER,
+                    mLocationManager.getBestProvider(criteria, true),
                     null,
                     this.getMainExecutor(),
                     new Consumer<Location>() {
+
                         @Override
                         public void accept(Location location) {
                             // code
                             new PostLocationTask().execute(Tools.RestURL+"api-auth/task/other/"+task.id, location.getLatitude()+"", location.getLongitude()+"" );
                         }
                     });
+
         }
         else if(Build.VERSION.SDK_INT < Build.VERSION_CODES.R){
-            mLocationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null);
+            mLocationManager.requestSingleUpdate(mLocationManager.getBestProvider(criteria, true), locationListener, null);
         }
     }
 

@@ -127,16 +127,16 @@ public class FriendActivity extends AppCompatActivity {
 
             String RestURL = str_param[0];
             type = Integer.parseInt(str_param[1]);
-            List<User> data = null;
+            List<FriendPage> data = null;
             try{
                 java.lang.reflect.Type type =
-                        new com.google.gson.reflect.TypeToken<List<User>>()
+                        new com.google.gson.reflect.TypeToken<List<FriendPage>>()
                         {}.getType();
-                data = (List<User>) DataAPI.jsonToData(RestURL, type);
+                data = (List<FriendPage>) DataAPI.jsonObjectToData(RestURL, type);
             }
             catch (Exception ex){ }
 
-            return data;
+            return data.get(0).results;
         }
         protected void onProgressUpdate(Void... progress){}
         protected void onPostExecute(List<User> result){
@@ -291,9 +291,7 @@ public class FriendActivity extends AppCompatActivity {
                     usernameText.setText(currentRow.user.username);
                     return convertView;
                 }
-                TextView rowNumber = convertView.findViewById(R.id.rowNumber);
                 TextView scoreText = convertView.findViewById(R.id.userScoreText);
-                rowNumber.setText((position+1)+"");
                 scoreText.setText(currentRow.points+"");
 
                 int userId = currentRow.id;

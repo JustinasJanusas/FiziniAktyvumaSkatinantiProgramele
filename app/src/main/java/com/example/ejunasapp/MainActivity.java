@@ -32,6 +32,7 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,8 +50,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     static public List<TaskItem> levels;
     static public int categoryId =-1;
     static public int levelId = -1;
-    static public int categorySelected =0;
-    static public int levelSelected = 0;
+    static public int categorySelected;
+    static public int levelSelected;
      private Boolean firstTime = true;
      private int selectedTab = 0;
     private BottomNavigationView bottomNavigationView;
@@ -63,7 +64,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
         bottomNavigationView.setSelectedItemId(R.id.navigation_tasks);
-
+        categorySelected = 0;
+        levelSelected = 0;
         if(Tools.user == null)
             new getUser().execute(Tools.RestURL+"auth/user");
         else
@@ -125,6 +127,12 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         protected User doInBackground(String... str_param){
 
             String RestURL = str_param[0];
+            while (TokenPair.getAuthenticationToken() == null) {
+                try {
+                    Thread.sleep(100);
+                }
+                catch (Exception e){}
+            }
             List<User> data = null;
             try{
                 java.lang.reflect.Type type =
@@ -170,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     showTasks(FAVORITE);}
                 else {
                     if(favTaskList == null)
-                        getTasks("api-auth/tasks/inprogress", FAVORITE);
+                        getFavorites("api-auth/tasks/inprogress");
                     if(otherTaskList == null)
                         getTasks("api-auth/tasks/other", OTHER);
                 }
@@ -191,8 +199,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private void getTasks(String url, int type){
         new getTasksTask().execute(Tools.RestURL+url, type +"");
     }
+    private void getFavorites(String url){
+        new getFavoritesTask().execute(Tools.RestURL+url);
+    }
 
-    private class getTasksTask extends AsyncTask<String, Void, List<Task>>{
+    private class getTasksTask extends AsyncTask<String, Void, TaskPage>{
 
         ProgressDialog actionProgressDialog =
                 new ProgressDialog(MainActivity.this);
@@ -205,9 +216,77 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             super.onPreExecute();
         }
 
-        protected List<Task> doInBackground(String... str_param){
+        protected TaskPage doInBackground(String... str_param){
             String RestURL = str_param[0];
             type = Integer.parseInt(str_param[1]);
+            while (TokenPair.getAuthenticationToken() == null) {
+                try {
+                    Thread.sleep(100);
+                }
+                catch (Exception e){}
+            }
+            TaskPage data = null;
+            try{
+                if(categories == null){
+                    categories = getTaskItems(Tools.RestURL+"api-auth/categories");
+                    categories.add(0, new TaskItem(-1, "Visos"));
+                }
+                if(levels == null){
+                    levels = getTaskItems(Tools.RestURL+"api-auth/levels");
+                    levels.add(0, new TaskItem(-1, "Visi"));
+                }
+                java.lang.reflect.Type type =
+                        new com.google.gson.reflect.TypeToken<List<TaskPage>>()
+                        {}.getType();
+                data = ((List<TaskPage>) DataAPI.jsonObjectToData(RestURL, type)).get(0);
+            }
+            catch (Exception ex){
+                Log.e(TAG, ex.toString());
+            }
+            return data;
+        }
+        protected void onProgressUpdate(Void... progress){}
+        protected void onPostExecute(TaskPage result){
+            actionProgressDialog.cancel();
+
+            if(result != null) {
+                switch (type){
+                    case FAVORITE:
+                        favTaskList = result.results;
+                        break;
+                    case OTHER:
+                        otherTaskList = result.results;
+                        break;
+                    case DONE:
+                        doneTaskList = result.results;
+                        break;
+                    default:
+                        return;
+                }
+                showTasks(type);
+            }
+        }
+    }
+    private class getFavoritesTask extends AsyncTask<String, Void, List<Task>>{
+
+        ProgressDialog actionProgressDialog =
+                new ProgressDialog(MainActivity.this);
+        @Override
+        protected void onPreExecute(){
+            actionProgressDialog.setMessage("Gaunami duomenys...");
+            actionProgressDialog.show();
+            actionProgressDialog.setCancelable(false);
+            super.onPreExecute();
+        }
+
+        protected List<Task> doInBackground(String... str_param){
+            String RestURL = str_param[0];
+            while (TokenPair.getAuthenticationToken() == null) {
+                try {
+                    Thread.sleep(100);
+                }
+                catch (Exception e){}
+            }
             List<Task> data = null;
             try{
                 if(categories == null){
@@ -222,7 +301,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                         new com.google.gson.reflect.TypeToken<List<Task>>()
                         {}.getType();
                 data = (List<Task>) DataAPI.jsonToData(RestURL, type);
-
             }
             catch (Exception ex){
                 Log.e(TAG, ex.toString());
@@ -234,20 +312,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             actionProgressDialog.cancel();
 
             if(result != null) {
-                switch (type){
-                    case FAVORITE:
-                        favTaskList = result;
-                        break;
-                    case OTHER:
-                        otherTaskList = result;
-                        break;
-                    case DONE:
-                        doneTaskList = result;
-                        break;
-                    default:
-                        return;
-                }
-                showTasks(type);
+                favTaskList = result;
+                showTasks(FAVORITE);
             }
         }
     }
@@ -362,7 +428,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             }
             new getTasksTask().execute(url, type+"");
             if(type == OTHER){
-                new getTasksTask().execute(url.replaceFirst("other", "inprogress"), FAVORITE+"");
+                new getFavoritesTask().execute(url.replaceFirst("other", "inprogress"));
             }
         }
     }

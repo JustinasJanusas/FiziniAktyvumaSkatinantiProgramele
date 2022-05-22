@@ -4,18 +4,7 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/friendRow">
-    <TextView
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/rowNumber"
-        android:text="10000"
-        android:textAlignment="center"
-        android:textStyle="bold"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"/>
+
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/rowAccountImage"
         android:layout_width="90dp"
@@ -30,7 +19,7 @@
         app:strokeWidth="2dp"
         app:strokeColor="@color/white"
         android:background="@android:color/transparent"
-        android:layout_toRightOf="@+id/rowNumber"
+        android:layout_marginLeft="10dp"
         />
     <LinearLayout
         android:layout_width="wrap_content"

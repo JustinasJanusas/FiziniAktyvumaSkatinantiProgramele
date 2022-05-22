@@ -39,7 +39,7 @@ public class RemindPasswordActivity extends Activity {
         });
     }
     private void onRemindClick(){
-        String email = ((EditText) findViewById(R.id.remindPasswordEmailText)).getText().toString();
+        String email = ((EditText) findViewById(R.id.remindPasswordEmailText)).getText().toString().trim();
         if(isValidEmail(email)){
             new tryResetPassword().execute(Tools.RestURL+"auth/reset_password", email);
         }

@@ -62,9 +62,9 @@ public class RegistrationActivity extends Activity {
 
         //------------------------------------------------------------------------
         private void onRegisterClick() {
-                String username = ((EditText) findViewById(R.id.username1)).getText().toString();
-                String name = ((EditText) findViewById(R.id.registrationName)).getText().toString();
-                String surname = ((EditText) findViewById(R.id.registrationSurname)).getText().toString();
+                String username = ((EditText) findViewById(R.id.username1)).getText().toString().trim();
+                String name = ((EditText) findViewById(R.id.registrationName)).getText().toString().trim();
+                String surname = ((EditText) findViewById(R.id.registrationSurname)).getText().toString().trim();
                 String email = ((EditText) findViewById(R.id.email)).getText().toString().trim();
                 String pass = ((EditText) findViewById(R.id.password)).getText().toString().trim();
                 String repeatPass = ((EditText) findViewById(R.id.repeatPass)).getText().toString().trim();

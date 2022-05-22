@@ -2,11 +2,14 @@ package com.example.ejunasapp;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -22,7 +25,6 @@ import java.util.List;
 public class LoginActivity extends Activity {
 
     private String TAG = "LoginActivity";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -120,8 +122,7 @@ public class LoginActivity extends Activity {
         mySnackbar.show();
     }
     private void doLogin(){
-        Intent serviceIntent = new Intent(LoginActivity.this, TokenService.class);
-        startService(serviceIntent);
+        startService(new Intent(this, TokenService.class));
         Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(myIntent);
         finish();

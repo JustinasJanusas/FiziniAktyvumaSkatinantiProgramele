@@ -67,7 +67,7 @@ public class AccountActivity extends Activity {
             public void onClick(View v) {
                 new AlertDialog.Builder(AccountActivity.this)
                         .setTitle("")
-                        .setMessage("Do you really want to whatever?")
+                        .setMessage("Ar tikrai norite pašalinti paskyrą")
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .setNegativeButton(R.string.cancel, null)
                         .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
@@ -172,6 +172,8 @@ public class AccountActivity extends Activity {
         editor.putString(getString(R.string.refresh_token), TokenPair.getRefreshToken());
         editor.commit();
         startActivity(logoutIntent);
+
+        finishAffinity();
     }
     private  void showUser(){
         TextView textView = findViewById(R.id.accountNameText);

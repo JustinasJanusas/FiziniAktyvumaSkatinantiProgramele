@@ -6,6 +6,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Binder;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -21,12 +22,20 @@ public class TokenService extends Service {
     private String TAG = "TokenService";
     private Looper serviceLooper;
     private ServiceHandler serviceHandler;
-
+    private final IBinder mBinder = new LocalBinder();
+    private volatile boolean done = false;
+    public class LocalBinder extends Binder {
+         public TokenService getService() {
+            // Return this instance of LocalService so clients can call public methods
+            return TokenService.this;
+        }
+    }
     // Handler that receives messages from the thread
     private final class ServiceHandler extends Handler {
         public ServiceHandler(Looper looper) {
             super(looper);
         }
+
         @Override
         public void handleMessage(Message msg) {
             // Normally we would do some work here, like download a file.
@@ -37,12 +46,14 @@ public class TokenService extends Service {
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putString(getString(R.string.refresh_token), TokenPair.getRefreshToken());
                 editor.commit();
+                done = true;
             } catch (InterruptedException e) {
                 // Restore interrupt status.
                 Thread.currentThread().interrupt();
             } catch (Exception e) {
                 Log.e(TAG, e.toString());
             }
+
             // Stop the service using the startId, so that we don't stop
             // the service in the middle of handling another job
             scheduleNextUpdate();
@@ -52,12 +63,12 @@ public class TokenService extends Service {
         {
             Intent intent = new Intent(TokenService.this, TokenService.class);
             PendingIntent pendingIntent =
-                    PendingIntent.getService(TokenService.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    PendingIntent.getService(TokenService.this, 0, intent, PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
             // The update frequency should often be user configurable.  This is not.
 
             long currentTimeMillis = System.currentTimeMillis();
-            long nextUpdateTimeMillis = (long)(currentTimeMillis + 14.6 * DateUtils.MINUTE_IN_MILLIS);
+            long nextUpdateTimeMillis = (long)(currentTimeMillis + 10 * DateUtils.MINUTE_IN_MILLIS);
 
             AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
             alarmManager.set(AlarmManager.RTC, nextUpdateTimeMillis, pendingIntent);
@@ -70,11 +81,9 @@ public class TokenService extends Service {
         // separate thread because the service normally runs in the process's
         // main thread, which we don't want to block. We also make it
         // background priority so CPU-intensive work doesn't disrupt our UI.
-
         HandlerThread thread = new HandlerThread("ServiceStartArguments",
                 Process.THREAD_PRIORITY_BACKGROUND);
         thread.start();
-
         // Get the HandlerThread's Looper and use it for our Handler
         serviceLooper = thread.getLooper();
         serviceHandler = new ServiceHandler(serviceLooper);
@@ -93,12 +102,11 @@ public class TokenService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        // We don't provide binding, so return null
         return null;
     }
 
     @Override
     public void onDestroy() {
-
+        Log.e("hah", "taip");
     }
 }
