@@ -12,9 +12,11 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
 
@@ -258,12 +260,22 @@ public class WebAPI {
     public static boolean changePicture(String url, String picture) throws Exception {
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        String auth = "Bearer " + TokenPair.getAuthenticationToken();
+        con.setRequestProperty ("Authorization", auth);
         con.setRequestMethod("PUT");
-        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(con.getOutputStream(), "UTF-8"));
-        writer.write("picture="+picture );
-        writer.flush();
-        writer.close();
+        con.setDoOutput(true);
+        con.setRequestProperty("Content-Type", "application/json");
+
+        String data = "{\n  \"picture\":\""+picture+"\"\n}";
+
+        byte[] out = data.getBytes(StandardCharsets.UTF_8);
+
+        OutputStream stream = con.getOutputStream();
+        stream.write(out);
+        stream.flush();
         int response = con.getResponseCode();
+        stream.close();
+        con.disconnect();
         if(response == HttpURLConnection.HTTP_OK){
 
             return true;}

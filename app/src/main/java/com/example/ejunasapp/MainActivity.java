@@ -115,6 +115,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             levelId = -2;
             getFilteredTasks();
         }
+        if(Tools.userUpdated){
+            Tools.userUpdated = false;
+            showUser();
+        }
     }
     private class getUser extends AsyncTask<String, Void, User>{
 

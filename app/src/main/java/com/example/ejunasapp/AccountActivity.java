@@ -197,6 +197,7 @@ public class AccountActivity extends Activity {
                 ShapeableImageView sImage = findViewById(R.id.accountImage);
                 sImage.setImageBitmap( BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length));
                 Tools.user.base64_picture = picture;
+                Tools.userUpdated = true;
             }
             else{
                 Snackbar snackbar = Snackbar.make(findViewById(R.id.logoutButton), "Įvyko klaida",
@@ -236,9 +237,18 @@ public class AccountActivity extends Activity {
         shapeableImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent pickPhoto = new Intent(Intent.ACTION_PICK,
-                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(pickPhoto , 1);
+                new AlertDialog.Builder(AccountActivity.this)
+                        .setTitle("")
+                        .setMessage("Ar norite pakeisti paskyros nuotrauką?")
+                        .setNegativeButton(R.string.cancel, null)
+                        .setPositiveButton(R.string.change, new DialogInterface.OnClickListener() {
+
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                Intent pickPhoto = new Intent(Intent.ACTION_PICK,
+                                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                                startActivityForResult(pickPhoto , 1);
+                            }}).show();
+
             }
         });
     }

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">EjunasApp</string>
     <string name="delete"><b><font color="red">TAIP</font></b></string>
+    <string name="change"><b><font color="blue">TAIP</font></b></string>
     <string name="cancel"><font color="black">Atšaukti</font></string>
     <string name="refresh_token">refreshToken</string>
     <string name="token_file">com.example.ejunasapp.TOKEN_FILE</string>

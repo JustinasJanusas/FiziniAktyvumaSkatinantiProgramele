@@ -144,6 +144,8 @@ public class LeaderboardActivity extends AppCompatActivity {
                 byte[] imageBytes = Base64.getDecoder().decode(currentRow.base64_picture);
                 imageView.setImageBitmap( BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length));
             }
+            else
+                imageView.setImageDrawable(getDrawable(R.drawable.no_profile_picture));
             if(currentRow.id == Tools.user.id){
                 row.findViewById(R.id.userRow).setBackgroundColor(getColor(R.color.yellow));
                 //convertView.setFocusedByDefault(true);

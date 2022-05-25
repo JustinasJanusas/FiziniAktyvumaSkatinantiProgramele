@@ -357,6 +357,8 @@ public class FriendActivity extends Activity {
                 byte[] imageBytes = Base64.getDecoder().decode(currentRow.base64_picture);
                 imageView.setImageBitmap( BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length));
             }
+            else
+                imageView.setImageDrawable(getDrawable(R.drawable.no_profile_picture));
             if(type == 2){
                 TextView usernameText = row.findViewById(R.id.usernameText);
                 usernameText.setText(currentRow.user.username);
