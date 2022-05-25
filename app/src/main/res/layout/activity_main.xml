@@ -81,7 +81,6 @@
             android:id="@+id/taskListView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_constrainedHeight="true"
             app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"

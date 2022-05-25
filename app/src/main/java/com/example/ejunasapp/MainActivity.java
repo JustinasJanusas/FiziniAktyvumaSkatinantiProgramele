@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.ListAdapter;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -18,6 +19,8 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
@@ -55,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
      private Boolean firstTime = true;
      private int selectedTab = 0;
     private BottomNavigationView bottomNavigationView;
+    private String otherNextPage;
+    private String doneNextPage;
 
 
     @Override
@@ -180,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     if(favTaskList == null)
                         getFavorites("api-auth/tasks/inprogress");
                     if(otherTaskList == null)
-                        getTasks("api-auth/tasks/other", OTHER);
+                        getTasks(Tools.RestURL+"api-auth/tasks/other", OTHER, false);
                 }
                 return true;
 
@@ -189,15 +194,15 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 if(doneTaskList != null)
                     showTasks(DONE);
                 else
-                    getTasks("api-auth/tasks/done", DONE);
+                    getTasks(Tools.RestURL+"api-auth/tasks/done", DONE, false);
                 return true;
 
         }
         return false;
     }
 
-    private void getTasks(String url, int type){
-        new getTasksTask().execute(Tools.RestURL+url, type +"");
+    private void getTasks(String url, int type, boolean append){
+        new getTasksTask().execute(url, type +"", append+"");
     }
     private void getFavorites(String url){
         new getFavoritesTask().execute(Tools.RestURL+url);
@@ -208,6 +213,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         ProgressDialog actionProgressDialog =
                 new ProgressDialog(MainActivity.this);
         int type = -1;
+        boolean append;
         @Override
         protected void onPreExecute(){
             actionProgressDialog.setMessage("Gaunami duomenys...");
@@ -219,6 +225,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         protected TaskPage doInBackground(String... str_param){
             String RestURL = str_param[0];
             type = Integer.parseInt(str_param[1]);
+            append = Boolean.parseBoolean(str_param[2]);
             while (TokenPair.getAuthenticationToken() == null) {
                 try {
                     Thread.sleep(100);
@@ -235,14 +242,17 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     levels = getTaskItems(Tools.RestURL+"api-auth/levels");
                     levels.add(0, new TaskItem(-1, "Visi"));
                 }
+
                 java.lang.reflect.Type type =
                         new com.google.gson.reflect.TypeToken<List<TaskPage>>()
                         {}.getType();
                 data = ((List<TaskPage>) DataAPI.jsonObjectToData(RestURL, type)).get(0);
+
             }
             catch (Exception ex){
                 Log.e(TAG, ex.toString());
             }
+
             return data;
         }
         protected void onProgressUpdate(Void... progress){}
@@ -250,18 +260,31 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             actionProgressDialog.cancel();
 
             if(result != null) {
-                switch (type){
-                    case FAVORITE:
-                        favTaskList = result.results;
-                        break;
+                if(append){
+                    switch (type){
+                        case OTHER:
+                            otherNextPage = result.next;
+                            otherTaskList.addAll(result.results);
+                            break;
+                        case DONE:
+                            doneNextPage = result.next;
+                            doneTaskList.addAll(result.results);
+                            break;
+                    }
+                    ListView listView = findViewById(R.id.taskListView);
+                    CustomAdapter adapter = (CustomAdapter) listView.getAdapter();
+                    adapter.addItems(result.results);
+                    return;
+                }
+                switch (type) {
                     case OTHER:
+                        otherNextPage = result.next;
                         otherTaskList = result.results;
                         break;
                     case DONE:
+                        doneNextPage = result.next;
                         doneTaskList = result.results;
                         break;
-                    default:
-                        return;
                 }
                 showTasks(type);
             }
@@ -366,7 +389,26 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
             }
         });
+        if(type != FAVORITE) {
+            taskListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(AbsListView view, int scrollState) {
+                    String next;
+                    if(type == OTHER)
+                        next = otherNextPage;
+                    else
+                        next = doneNextPage;
+                    if (!view.canScrollList(View.SCROLL_INDICATOR_BOTTOM) && next != null) {
+                        getTasks(next, type, true);
+                    }
+                }
 
+                @Override
+                public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+                }
+            });
+        }
     }
     private List<TaskItem> getTaskItems(String url) throws Exception{
         java.lang.reflect.Type type =
@@ -426,7 +468,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
                 }
             }
-            new getTasksTask().execute(url, type+"");
+            getTasks(url, type, false);
             if(type == OTHER){
                 new getFavoritesTask().execute(url.replaceFirst("other", "inprogress"));
             }
@@ -470,27 +512,39 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+            View row = null;
             if (convertView == null) {
-                if (position < count)
-                    convertView = thisInflater.inflate( rowID2, parent, false );
-                else
-                    convertView = thisInflater.inflate( rowID, parent, false );
-                TextView nameText = convertView.findViewById(R.id.nameText);
-                TextView levelText = convertView.findViewById(R.id.levelText);
-                TextView typeText = convertView.findViewById(R.id.typeText);
-                ImageView imageView = convertView.findViewById(R.id.taskImage);
-                Task currentRow = (Task) getItem(position);
-                nameText.setText(currentRow.name);
-                levelText.setText(currentRow.level.name);
-                typeText.setText(currentRow.type.name);
-                int resID = getResources().getIdentifier("category_"+currentRow.category.id, "drawable", getPackageName());
-                if(resID == 0)
-                    resID = R.drawable.category_other;
-                imageView.setImageResource(resID);
-
+                row = thisInflater.inflate(rowID, parent, false);
             }
-            return convertView;
+            else {
+                row = convertView;
+            }
+            TextView nameText = row.findViewById(R.id.nameText);
+            TextView levelText = row.findViewById(R.id.levelText);
+            TextView typeText = row.findViewById(R.id.typeText);
+            ImageView imageView = row.findViewById(R.id.taskImage);
+            Task currentRow = (Task) getItem(position);
+            nameText.setText(currentRow.name);
+            levelText.setText(currentRow.level.name);
+            typeText.setText(currentRow.type.name);
+            int resID = getResources().getIdentifier("category_"+currentRow.category.id, "drawable", getPackageName());
+            if(resID == 0)
+                resID = R.drawable.category_other;
+            imageView.setImageResource(resID);
+            if(rowID2 == -1)
+                return row;
+            if(position < count)
+                row.setBackgroundColor(getResources().getColor(R.color.yellow));
+            else
+                row.setBackgroundColor(Color.WHITE);
+            return row;
         }
+        public void addItems(List<Task> list){
+            this.singleRow.addAll(list);
+            this.notifyDataSetChanged();
+
+        }
+
     }
     private class CustomSpinnerAdapter extends ArrayAdapter<TaskItem>{
         private Context context;

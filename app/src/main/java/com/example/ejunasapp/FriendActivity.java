@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -42,11 +43,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
-public class FriendActivity extends AppCompatActivity {
+public class FriendActivity extends Activity {
     private String TAG = "FriendActivity";
     private List<User> FriendList;
     private List<User> requestList;
     private BottomNavigationView bottomNavigationView;
+    private String friendNextPage = null;
+    private String requestNextPage = null;
+    private String addNextPage = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,11 +61,11 @@ public class FriendActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.navigation_friends:
-                        new getFriends().execute(Tools.RestURL+"auth/friends", "0");
+                        new getFriends().execute(Tools.RestURL+"auth/friends", "0", false+"");
                         return true;
 
                     case R.id.navigation_requests:
-                        new getFriends().execute(Tools.RestURL+"auth/friends/pending", "1");
+                        new getFriends().execute(Tools.RestURL+"auth/friends/pending", "1", false+"");
                         return true;
 
                 }
@@ -92,7 +96,7 @@ public class FriendActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if(!input.getText().toString().trim().equals("")) {
-                            new getFriends().execute(Tools.RestURL + "auth/users?search=" + input.getText(), "2");
+                            new getFriends().execute(Tools.RestURL + "auth/users?search=" + input.getText(), "2", false+"");
                         }
                     }
                 });
@@ -115,6 +119,8 @@ public class FriendActivity extends AppCompatActivity {
         ProgressDialog actionProgressDialog =
                 new ProgressDialog(FriendActivity.this);
         int type = -1;
+        boolean append;
+        String next;
         @Override
         protected void onPreExecute(){
             actionProgressDialog.setMessage("Gaunami duomenys...");
@@ -127,6 +133,7 @@ public class FriendActivity extends AppCompatActivity {
 
             String RestURL = str_param[0];
             type = Integer.parseInt(str_param[1]);
+            append = Boolean.parseBoolean(str_param[2]);
             List<FriendPage> data = null;
             try{
                 java.lang.reflect.Type type =
@@ -135,7 +142,7 @@ public class FriendActivity extends AppCompatActivity {
                 data = (List<FriendPage>) DataAPI.jsonObjectToData(RestURL, type);
             }
             catch (Exception ex){ }
-
+            next = data.get(0).next;
             return data.get(0).results;
         }
         protected void onProgressUpdate(Void... progress){}
@@ -146,14 +153,37 @@ public class FriendActivity extends AppCompatActivity {
 
             if(result != null) {
                 if(type == 0) {
+                    friendNextPage = next;
+                    if(append){
+
+                        ListView listView = findViewById(R.id.friendsListView);
+                        CustomAdapter adapter = (CustomAdapter) listView.getAdapter();
+                        adapter.addItems(result);
+                        return;
+                    }
                     FriendList = result;
                     showUsers(FriendList, R.layout.friend_row, 0);
                 }
                 else if (type == 1){
+                    requestNextPage = next;
+                    if(append){
+
+                        ListView listView = findViewById(R.id.friendsListView);
+                        CustomAdapter adapter = (CustomAdapter) listView.getAdapter();
+                        adapter.addItems(result);
+                        return;
+                    }
                     requestList = result;
                     showUsers(requestList, R.layout.request_row, 1);
                 }
                 else if(type == 2){
+                    addNextPage = next;
+                    if (append){
+                        ListView listView = findViewById(R.id.popupListView);
+                        CustomAdapter adapter = (CustomAdapter) listView.getAdapter();
+                        adapter.addItems(result);
+                        return;
+                    }
                     Dialog dialog = new Dialog(FriendActivity.this);
                     dialog.setContentView(R.layout.popup_listview_layout);
                     dialog.setTitle("Pasirinkite draugą");
@@ -176,6 +206,20 @@ public class FriendActivity extends AppCompatActivity {
                             dialog.cancel();
                         }
                     });
+                    /*friendListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+                        @Override
+                        public void onScrollStateChanged(AbsListView view, int scrollState) {
+                             String next2 = addNextPage;
+                            if (!view.canScrollList(View.SCROLL_INDICATOR_BOTTOM) && next != null) {
+                                new getFriends().execute(next2, type+"", true+"");
+                            }
+                        }
+
+                        @Override
+                        public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+                        }
+                    });*/
                     dialog.show();
                 }
             }
@@ -239,6 +283,28 @@ public class FriendActivity extends AppCompatActivity {
         listAdapter = new CustomAdapter(getApplicationContext(), (ArrayList) userList, rowId, type);
         ListView friendListView = findViewById(R.id.friendsListView);
         friendListView.setAdapter(listAdapter);
+        friendListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                String next;
+                if(type == 0) {
+                    next = friendNextPage;
+                    friendNextPage = null;
+                }
+                else {
+                    next = requestNextPage;
+                    requestNextPage = null;
+                }
+                if (!view.canScrollList(View.SCROLL_INDICATOR_BOTTOM) && next != null) {
+                    new getFriends().execute(next, type+"", true+"");
+                }
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+            }
+        });
        // friendListView.setClickable(false);
 
     }
@@ -274,69 +340,76 @@ public class FriendActivity extends AppCompatActivity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+            View row = null;
             if (convertView == null) {
-                convertView = thisInflater.inflate( rowID, parent, false );
+                row = thisInflater.inflate( rowID, parent, false );
                 //convertView.setClickable(false);
-                TextView nameText = convertView.findViewById(R.id.userRowNameText);
-                ShapeableImageView imageView = convertView.findViewById(R.id.rowAccountImage);
-                User currentRow = (User) getItem(position);
-                nameText.setText(currentRow.user.first_name+ " "+currentRow.user.last_name);
-                if(currentRow.base64_picture != null && currentRow.base64_picture != "") {
-
-                    byte[] imageBytes = Base64.getDecoder().decode(currentRow.base64_picture);
-                    imageView.setImageBitmap( BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length));
-                }
-                if(type == 2){
-                    TextView usernameText = convertView.findViewById(R.id.usernameText);
-                    usernameText.setText(currentRow.user.username);
-                    return convertView;
-                }
-                TextView scoreText = convertView.findViewById(R.id.userScoreText);
-                scoreText.setText(currentRow.points+"");
-
-                int userId = currentRow.id;
-                if(type == 0) {
-                    Button buttonDeletefriend = (Button) convertView.findViewById(R.id.deleteFriendButton);
-
-                    buttonDeletefriend.setOnClickListener(new View.OnClickListener() {
-
-                        @Override
-                        public void onClick(View v) {
-                            new AlertDialog.Builder(FriendActivity.this)
-                                    .setTitle("")
-                                    .setMessage("Ar tikrai norite pašalinti draugą?")
-                                    .setIcon(android.R.drawable.ic_dialog_alert)
-                                    .setNegativeButton(R.string.cancel, null)
-                                    .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
-
-                                        public void onClick(DialogInterface dialog, int whichButton) {
-                                            new AddFriend().execute(Tools.RestURL+"auth/user/"+userId, "DELETE", "2");
-                                        }
-                                    }).show();
-                        }
-                    });
-                }
-                else if(type == 1){
-                    Button buttonAccept = (Button) convertView.findViewById(R.id.acceptFriendButton);
-                    Button buttonDeny = (Button) convertView.findViewById(R.id.denyFriendButton);
-                    buttonAccept.setOnClickListener(new View.OnClickListener() {
-
-                        @Override
-                        public void onClick(View v) {
-                            new AddFriend().execute(Tools.RestURL+"auth/user/"+userId, "POST", "1");
-                        }
-                    });
-                    buttonDeny.setOnClickListener(new View.OnClickListener() {
-
-                        @Override
-                        public void onClick(View v) {
-                            new AddFriend().execute(Tools.RestURL+"auth/user/"+userId, "DELETE", "1");
-                        }
-                    });
-                }
 
             }
-            return convertView;
+            else
+                row = convertView;
+            TextView nameText = row.findViewById(R.id.userRowNameText);
+            ShapeableImageView imageView = row.findViewById(R.id.rowAccountImage);
+            User currentRow = (User) getItem(position);
+            nameText.setText(currentRow.user.first_name+ " "+currentRow.user.last_name+ " "+position);
+            if(currentRow.base64_picture != null && currentRow.base64_picture != "") {
+
+                byte[] imageBytes = Base64.getDecoder().decode(currentRow.base64_picture);
+                imageView.setImageBitmap( BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length));
+            }
+            if(type == 2){
+                TextView usernameText = row.findViewById(R.id.usernameText);
+                usernameText.setText(currentRow.user.username);
+                return row;
+            }
+            TextView scoreText = row.findViewById(R.id.userScoreText);
+            scoreText.setText(currentRow.points+"");
+
+            int userId = currentRow.id;
+            if(type == 0) {
+                Button buttonDeletefriend = (Button) row.findViewById(R.id.deleteFriendButton);
+
+                buttonDeletefriend.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        new AlertDialog.Builder(FriendActivity.this)
+                                .setTitle("")
+                                .setMessage("Ar tikrai norite pašalinti draugą?")
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .setNegativeButton(R.string.cancel, null)
+                                .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+
+                                    public void onClick(DialogInterface dialog, int whichButton) {
+                                        new AddFriend().execute(Tools.RestURL+"auth/user/"+userId, "DELETE", "2");
+                                    }
+                                }).show();
+                    }
+                });
+            }
+            else if(type == 1){
+                Button buttonAccept = (Button) row.findViewById(R.id.acceptFriendButton);
+                Button buttonDeny = (Button) row.findViewById(R.id.denyFriendButton);
+                buttonAccept.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        new AddFriend().execute(Tools.RestURL+"auth/user/"+userId, "POST", "1");
+                    }
+                });
+                buttonDeny.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        new AddFriend().execute(Tools.RestURL+"auth/user/"+userId, "DELETE", "1");
+                    }
+                });
+            }
+            return row;
+        }
+        public void addItems(List<User> list){
+            singleRow.addAll(list);
+            this.notifyDataSetChanged();
         }
 
     }

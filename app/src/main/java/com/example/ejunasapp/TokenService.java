@@ -107,6 +107,6 @@ public class TokenService extends Service {
 
     @Override
     public void onDestroy() {
-        Log.e("hah", "taip");
+        super.onDestroy();
     }
 }

@@ -31,9 +31,9 @@ public class WebAPI {
 
         con.setRequestProperty ("Authorization", auth);
         con.setRequestMethod("GET");
-
         int responseCode = con.getResponseCode();
         if(responseCode == HttpURLConnection.HTTP_OK){
+
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(
                             con.getInputStream()));
@@ -253,6 +253,20 @@ public class WebAPI {
         if(response == HttpURLConnection.HTTP_OK){
 
                 return true;}
+        return false;
+    }
+    public static boolean changePicture(String url, String picture) throws Exception {
+        URL obj = new URL(url);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        con.setRequestMethod("PUT");
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(con.getOutputStream(), "UTF-8"));
+        writer.write("picture="+picture );
+        writer.flush();
+        writer.close();
+        int response = con.getResponseCode();
+        if(response == HttpURLConnection.HTTP_OK){
+
+            return true;}
         return false;
     }
 }

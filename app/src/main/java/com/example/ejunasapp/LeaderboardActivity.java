@@ -123,28 +123,34 @@ public class LeaderboardActivity extends AppCompatActivity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+            View row = null;
             if (convertView == null) {
-                convertView = thisInflater.inflate( rowID, parent, false );
-                convertView.setClickable(false);
-                TextView nameText = convertView.findViewById(R.id.userRowNameText);
-                TextView scoreText = convertView.findViewById(R.id.userScoreText);
-                TextView rowNumber = convertView.findViewById(R.id.rowNumber);
-                rowNumber.setText((position+1)+"");
-                ShapeableImageView imageView = convertView.findViewById(R.id.rowAccountImage);
-                User currentRow = (User) getItem(position);
-                nameText.setText(currentRow.user.first_name+ " "+currentRow.user.last_name);
-                scoreText.setText(currentRow.points+"");
-                if(currentRow.base64_picture != null && currentRow.base64_picture != "") {
+                row = thisInflater.inflate( rowID, parent, false );
 
-                    byte[] imageBytes = Base64.getDecoder().decode(currentRow.base64_picture);
-                    imageView.setImageBitmap( BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length));
-                }
-                if(currentRow.id == Tools.user.id){
-                    convertView.findViewById(R.id.userRow).setBackgroundColor(getColor(R.color.yellow));
-                    //convertView.setFocusedByDefault(true);
-                }
             }
-            return convertView;
+            else
+                row =convertView;
+            row.setClickable(false);
+            TextView nameText = row.findViewById(R.id.userRowNameText);
+            TextView scoreText = row.findViewById(R.id.userScoreText);
+            TextView rowNumber = row.findViewById(R.id.rowNumber);
+            rowNumber.setText((position+1)+"");
+            ShapeableImageView imageView = row.findViewById(R.id.rowAccountImage);
+            User currentRow = (User) getItem(position);
+            nameText.setText(currentRow.user.first_name+ " "+currentRow.user.last_name);
+            scoreText.setText(currentRow.points+"");
+            if(currentRow.base64_picture != null && currentRow.base64_picture != "") {
+
+                byte[] imageBytes = Base64.getDecoder().decode(currentRow.base64_picture);
+                imageView.setImageBitmap( BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length));
+            }
+            if(currentRow.id == Tools.user.id){
+                row.findViewById(R.id.userRow).setBackgroundColor(getColor(R.color.yellow));
+                //convertView.setFocusedByDefault(true);
+            }
+            else
+                row.findViewById(R.id.userRow).setBackgroundColor(Color.WHITE);
+            return row;
         }
     }
 }

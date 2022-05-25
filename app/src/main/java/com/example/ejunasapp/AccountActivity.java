@@ -7,9 +7,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -19,7 +22,12 @@ import android.widget.TextView;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.nio.ByteBuffer;
 import java.util.Base64;
 import java.util.List;
 
@@ -157,6 +165,46 @@ public class AccountActivity extends Activity {
             }
         }
     }
+    private class tryChangePicture extends AsyncTask<String, Void, Boolean> {
+
+        ProgressDialog actionProgressDialog =
+                new ProgressDialog(AccountActivity.this);
+        String picture;
+        @Override
+        protected void onPreExecute(){
+            actionProgressDialog.setMessage("Siunčiama...");
+            actionProgressDialog.show();
+            actionProgressDialog.setCancelable(false);
+            super.onPreExecute();
+        }
+
+        protected Boolean doInBackground(String... str_param){
+            String RestURL = str_param[0];
+             picture = str_param[1];
+            try{
+                return WebAPI.changePicture(RestURL, picture);
+            }
+            catch (Exception ex){
+                Log.e(TAG, ex.toString());
+            }
+            return false;
+        }
+        protected void onProgressUpdate(Void... progress){}
+        protected void onPostExecute(Boolean result){
+            actionProgressDialog.cancel();
+            if(result){
+                byte[] imageBytes = Base64.getDecoder().decode(picture);
+                ShapeableImageView sImage = findViewById(R.id.accountImage);
+                sImage.setImageBitmap( BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length));
+                Tools.user.base64_picture = picture;
+            }
+            else{
+                Snackbar snackbar = Snackbar.make(findViewById(R.id.logoutButton), "Įvyko klaida",
+                        3000);
+                snackbar.show();
+            }
+        }
+    }
     private void logout(){
         Intent logoutIntent = new Intent(this, LoginActivity.class);
         Tools.user = null;
@@ -185,5 +233,50 @@ public class AccountActivity extends Activity {
             byte[] imageBytes = Base64.getDecoder().decode(Tools.user.base64_picture);
             shapeableImageView.setImageBitmap( BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length));
         }
+        shapeableImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent pickPhoto = new Intent(Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(pickPhoto , 1);
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode){
+            case 1:
+                if(resultCode == RESULT_OK){
+                    Uri selectedImage = data.getData();
+                    try {
+                        InputStream stream = getContentResolver().openInputStream(selectedImage);
+                        ShapeableImageView imageView = findViewById(R.id.accountImage);
+                        byte[] b = getBytes(stream);
+                        String base64Image = Base64.getEncoder().encodeToString(b);
+                        new tryChangePicture().execute(Tools.RestURL+"auth/photo", base64Image);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+                break;
+            default:
+                return;
+        }
+    }
+    public byte[] getBytes(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+        int bufferSize = 1024;
+        byte[] buffer = new byte[bufferSize];
+
+        int len = 0;
+        while ((len = inputStream.read(buffer)) != -1) {
+            byteBuffer.write(buffer, 0, len);
+        }
+        return byteBuffer.toByteArray();
     }
 }
