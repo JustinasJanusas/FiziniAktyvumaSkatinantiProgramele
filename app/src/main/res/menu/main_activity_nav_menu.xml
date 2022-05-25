@@ -9,4 +9,8 @@
         android:id="@+id/navigation_history"
         android:icon="@drawable/history"
         android:title="@string/title_history" />
+    <item
+        android:id="@+id/navigation_addtasks"
+        android:icon="@drawable/addtasks1"
+        android:title="Sukurti užduotį" />
 </menu>

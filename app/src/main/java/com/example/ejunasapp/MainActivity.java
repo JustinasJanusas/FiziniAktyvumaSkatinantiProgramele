@@ -200,7 +200,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 else
                     getTasks(Tools.RestURL+"api-auth/tasks/done", DONE, false);
                 return true;
-
+            case R.id.navigation_addtasks:
+                selectedTab = 2;
+                Intent createTask = new Intent(this, CreateNewTaskActivity.class);
+                startActivity(createTask);
         }
         return false;
     }
