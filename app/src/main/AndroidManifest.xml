@@ -45,7 +45,7 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".FriendActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".CreateNewTaskActivity"
+        <activity android:name=".AddNewTaskActivity"
             android:screenOrientation="portrait"/>
     </application>
 

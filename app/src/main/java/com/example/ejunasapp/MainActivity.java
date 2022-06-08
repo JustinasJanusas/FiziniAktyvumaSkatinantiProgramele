@@ -4,14 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.recyclerview.widget.ListAdapter;
 
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,7 +18,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
@@ -35,7 +32,6 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -202,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 return true;
             case R.id.navigation_addtasks:
                 selectedTab = 2;
-                Intent createTask = new Intent(this, CreateNewTaskActivity.class);
+                Intent createTask = new Intent(this, AddNewTaskActivity.class);
                 startActivity(createTask);
         }
         return false;

@@ -281,5 +281,36 @@ public class WebAPI {
             return true;}
         return false;
     }
+    public static boolean attemptAddTask(String url, String Taskname, String category, String type,
+                                          String level, String author, String newLatitude, String newLongitute,
+                                         String radius, String TaskText)
+            throws Exception {
+        URL obj = new URL(url);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        con.setRequestMethod("POST");
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(con.getOutputStream(), "UTF-8"));
+        writer.write("name="+Taskname + "&category="+category + "&type="+type
+                + "&level="+level +
+                "&author="+author + "&text="+TaskText);
+        writer.flush();
+        writer.close();
+        int response = con.getResponseCode();
+
+        if(response == HttpURLConnection.HTTP_CREATED){
+            BufferedReader reader =  new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
+            String line = reader.readLine();
+            if(line != null){
+                JSONObject json = new JSONObject(line);
+                return true;
+            }
+            else
+                return false;
+        }
+        else if(response == HttpURLConnection.HTTP_BAD_REQUEST){
+            return false;
+        }
+        throw new Exception("Problem connecting to database");
+    }
+
 }
 
