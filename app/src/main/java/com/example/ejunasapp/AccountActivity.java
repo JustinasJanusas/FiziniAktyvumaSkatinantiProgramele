@@ -212,6 +212,7 @@ public class AccountActivity extends Activity {
         MainActivity.otherTaskList = null;
         MainActivity.favTaskList = null;
         MainActivity.doneTaskList = null;
+        MainActivity.changed = false;
         logoutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         logoutIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         logoutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);

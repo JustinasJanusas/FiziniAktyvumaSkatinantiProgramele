@@ -313,6 +313,7 @@ public class TaskDetailedActivity extends Activity {
         submitButton.setStateListAnimator(null);
         mapButton.setClickable(false);
         mapButton.setVisibility(View.INVISIBLE);
+        star.setVisibility(View.INVISIBLE);
         submitButton.setBackgroundColor(Color.WHITE);
 
         submitButton.setTextColor(getColor(R.color.green));

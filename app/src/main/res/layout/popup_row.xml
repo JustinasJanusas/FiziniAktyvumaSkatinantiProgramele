@@ -19,7 +19,8 @@
         android:src="@drawable/no_profile_picture"
         app:shapeAppearance="@style/circular"
         app:strokeColor="@color/white"
-        app:strokeWidth="2dp" />
+        app:strokeWidth="2dp"
+        android:scaleType="centerCrop"/>
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

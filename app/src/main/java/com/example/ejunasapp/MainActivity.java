@@ -505,7 +505,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         Spinner levelSpinner = findViewById(R.id.levelSpinner);
         int lId =((TaskItem) levelSpinner.getSelectedItem()).id;
         if(cId != categoryId || lId != levelId || needFilter) {
-            if(!needFilter)
+            if(cId != categoryId || lId != levelId)
                 changed = true;
             String url = Tools.RestURL + u;
             if (cId > -1 || lId > -1) {
@@ -658,6 +658,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         MainActivity.otherTaskList = null;
         MainActivity.favTaskList = null;
         MainActivity.doneTaskList = null;
+        MainActivity.changed = false;
         logoutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         logoutIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         logoutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -668,7 +669,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         editor.putString(getString(R.string.refresh_token), TokenPair.getRefreshToken());
         editor.commit();
         startActivity(logoutIntent);
-
         finishAffinity();
     }
 }

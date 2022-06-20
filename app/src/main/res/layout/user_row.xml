@@ -31,6 +31,7 @@
         app:strokeColor="@color/white"
         android:background="@android:color/transparent"
         android:layout_toRightOf="@+id/rowNumber"
+        android:scaleType="centerCrop"
         />
     <LinearLayout
         android:layout_width="wrap_content"

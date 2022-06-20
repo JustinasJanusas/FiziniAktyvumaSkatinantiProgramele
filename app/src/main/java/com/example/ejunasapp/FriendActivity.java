@@ -351,7 +351,7 @@ public class FriendActivity extends Activity {
             TextView nameText = row.findViewById(R.id.userRowNameText);
             ShapeableImageView imageView = row.findViewById(R.id.rowAccountImage);
             User currentRow = (User) getItem(position);
-            nameText.setText(currentRow.user.first_name+ " "+currentRow.user.last_name+ " "+position);
+            nameText.setText(currentRow.user.first_name+ " "+currentRow.user.last_name);
             if(currentRow.base64_picture != null && currentRow.base64_picture != "") {
 
                 byte[] imageBytes = Base64.getDecoder().decode(currentRow.base64_picture);
