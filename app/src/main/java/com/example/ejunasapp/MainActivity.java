@@ -176,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 logout();
                 return;
             }
-
+            failedTaskCount = 0;
             Tools.user = result;
             showUser();
 
@@ -304,6 +304,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             actionProgressDialog.cancel();
 
             if(result != null) {
+                failedTaskCount = 0;
                 if(append){
                     switch (type){
                         case OTHER:
@@ -385,9 +386,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         }
         protected void onProgressUpdate(Void... progress){}
         protected void onPostExecute(List<Task> result){
+
             actionProgressDialog.cancel();
 
             if(result != null) {
+                failedTaskCount = 0;
                 favTaskList = result;
                 showTasks(FAVORITE);
             }
