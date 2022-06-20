@@ -24,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -40,6 +41,7 @@ public class TaskDetailedActivity extends Activity {
 
     private String TAG = "TaskDetailedActivity";
     Button submitButton;
+    ImageButton mapButton;
     Task task;
     int type;
     CheckBox star;
@@ -113,11 +115,14 @@ public class TaskDetailedActivity extends Activity {
             }
         });
         submitButton = (Button) findViewById(R.id.done);
+        mapButton = findViewById(R.id.mapButton);
         star = findViewById(R.id.checkboxStar);
         if(type == MainActivity.DONE) {
             setDone();
             star.setClickable(false);
             star.setVisibility(View.INVISIBLE);
+            mapButton.setClickable(false);
+            mapButton.setVisibility(View.INVISIBLE);
         }
         else {
             if(type == MainActivity.FAVORITE)
@@ -129,6 +134,14 @@ public class TaskDetailedActivity extends Activity {
                     changeTaskState();
                 }
             });
+            mapButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(TaskDetailedActivity.this, MapsActivity.class);
+                    intent.putExtra("id", task.id);
+                    startActivity(intent);
+                }
+            });
             submitButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -137,7 +150,7 @@ public class TaskDetailedActivity extends Activity {
                 }
             });
         }
-        }
+    }
     private class PostLocationTask extends AsyncTask<String, Void, Boolean>{
 
         ProgressDialog actionProgressDialog =
@@ -175,6 +188,7 @@ public class TaskDetailedActivity extends Activity {
                 MainActivity.doneTaskList = null;
                 MainActivity.favTaskList = null;
                 MainActivity.otherTaskList = null;
+                Tools.user = null;
                 showPopupWindow(R.drawable.checkmark);
                 setDone();
                 type = MainActivity.DONE;
@@ -296,6 +310,8 @@ public class TaskDetailedActivity extends Activity {
     private void setDone(){
         submitButton.setOnClickListener(null);
         submitButton.setStateListAnimator(null);
+        mapButton.setClickable(false);
+        mapButton.setVisibility(View.INVISIBLE);
         submitButton.setBackgroundColor(Color.WHITE);
 
         submitButton.setTextColor(getColor(R.color.green));

@@ -41,16 +41,17 @@
         android:background="@drawable/rounded_button"
         android:text="Registruotis"
         android:textColor="@color/white" />
+
     <TextView
-        android:layout_below="@id/nameText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="30dp"
-        android:layout_marginTop="10dp"
+        android:layout_below="@id/nameText"
         android:layout_gravity="center_vertical"
-        android:textStyle="bold"
+        android:layout_marginTop="10dp"
+        android:paddingLeft="30dp"
+        android:text="Prisijungimo vardas: "
         android:textSize="15dp"
-        android:text="Prisijungimo vardas: "/>
+        android:textStyle="bold" />
     <FrameLayout
         android:layout_centerInParent="true"
         android:layout_width="330dp"

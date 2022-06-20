@@ -3,15 +3,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/green">
+
     <ImageView
         android:id="@+id/taskImage"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginTop="5dp"
         android:layout_marginStart="15dp"
+        android:layout_marginTop="5dp"
         android:layout_marginEnd="15dp"
-        android:layout_marginBottom="5dp"
-        ></ImageView>
+        android:layout_marginBottom="5dp"></ImageView>
 
     <TextView
         android:layout_marginTop="20dp"

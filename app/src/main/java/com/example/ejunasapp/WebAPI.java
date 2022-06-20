@@ -11,6 +11,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -215,6 +216,7 @@ public class WebAPI {
         if(response == HttpURLConnection.HTTP_OK){
             BufferedReader reader =  new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
             String line = reader.readLine();
+            con.disconnect();
             if(line != null){
                 JSONObject json = new JSONObject(line);
 
@@ -226,6 +228,7 @@ public class WebAPI {
                 return false;
         }
         else if(response == HttpURLConnection.HTTP_UNAUTHORIZED){
+            con.disconnect();
             return false;
         }
         throw new Exception("Problem connecting to database");
@@ -241,7 +244,9 @@ public class WebAPI {
         writer.write("refresh_token="+TokenPair.getRefreshToken());
         writer.flush();
         writer.close();
-        return con.getResponseCode();
+        int response = con.getResponseCode();
+        con.disconnect();
+        return response;
     }
     public static boolean attempResetPassword(String url, String email) throws Exception {
         URL obj = new URL(url);
@@ -252,6 +257,7 @@ public class WebAPI {
         writer.flush();
         writer.close();
         int response = con.getResponseCode();
+        con.disconnect();
         if(response == HttpURLConnection.HTTP_OK){
 
                 return true;}
@@ -281,35 +287,28 @@ public class WebAPI {
             return true;}
         return false;
     }
-    public static boolean attemptAddTask(String url, String Taskname, String category, String type,
-                                          String level, String author, String newLatitude, String newLongitute,
-                                         String radius, String TaskText)
+    public static boolean addTask(String url, String json)
             throws Exception {
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        String auth = "Bearer " + TokenPair.getAuthenticationToken();
+        con.setRequestProperty ("Authorization", auth);
+        con.setDoOutput(true);
         con.setRequestMethod("POST");
-        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(con.getOutputStream(), "UTF-8"));
-        writer.write("name="+Taskname + "&category="+category + "&type="+type
-                + "&level="+level +
-                "&author="+author + "&text="+TaskText);
-        writer.flush();
-        writer.close();
-        int response = con.getResponseCode();
+        con.setRequestProperty("Content-Type", "application/json");
 
+        byte[] out = json.getBytes(StandardCharsets.UTF_8);
+
+        OutputStream stream = con.getOutputStream();
+        stream.write(out);
+        stream.flush();
+        stream.close();
+        int response = con.getResponseCode();
+        con.disconnect();
         if(response == HttpURLConnection.HTTP_CREATED){
-            BufferedReader reader =  new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
-            String line = reader.readLine();
-            if(line != null){
-                JSONObject json = new JSONObject(line);
-                return true;
-            }
-            else
-                return false;
+            return true;
         }
-        else if(response == HttpURLConnection.HTTP_BAD_REQUEST){
-            return false;
-        }
-        throw new Exception("Problem connecting to database");
+        return false;
     }
 
 }

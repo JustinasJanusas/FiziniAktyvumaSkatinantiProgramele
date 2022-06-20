@@ -5,4 +5,5 @@ public class User {
     public String base64_picture;
     public int points;
     public UserInfo user = new UserInfo();
+    public int hints;
 }

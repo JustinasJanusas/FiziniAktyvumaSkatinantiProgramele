@@ -16,7 +16,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EjunasApp">
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCfmeQyGM2EN1b-z6EddIIzdhoyDG64P7A" />
         <service android:name="TokenService" android:stopWithTask="true"/>
+
         <activity
             android:name=".LoginActivity"
             android:exported="true"
@@ -27,6 +31,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".MapsActivity"
+            android:screenOrientation="portrait"/>
         <activity android:name=".TaskDetailedActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".RegistrationActivity"

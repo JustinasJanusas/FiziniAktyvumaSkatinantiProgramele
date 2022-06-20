@@ -8,6 +8,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -95,6 +96,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                             Intent accountIntent = new Intent(MainActivity.this, AccountActivity.class);
                             startActivity(accountIntent);
                             break;
+                        case R.id.navigation_addtasks:
+                            selectedTab = 2;
+                            Intent createTask = new Intent(MainActivity.this, AddNewTaskActivity.class);
+                            startActivity(createTask);
                         default:
                             return false;
                     }
@@ -106,12 +111,16 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     @Override
     protected void onRestart(){
         super.onRestart();
+        Log.e("AA", "wow");
         if(otherTaskList == null) {
             categoryId = -2;
             levelId = -2;
             getFilteredTasks();
         }
-        if(Tools.userUpdated){
+        if(Tools.user == null){
+            new getUser().execute(Tools.RestURL+"auth/user");
+        }
+        else if(Tools.userUpdated){
             Tools.userUpdated = false;
             showUser();
         }
@@ -172,6 +181,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         }
         TextView textView = findViewById(R.id.drawerAccountNameText);
         textView.setText(Tools.user.user.first_name+ " "+Tools.user.user.last_name);
+        TextView pointText = findViewById(R.id.drawerAccountPoint);
+        pointText.setText(Tools.user.points+"");
     }
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -196,10 +207,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 else
                     getTasks(Tools.RestURL+"api-auth/tasks/done", DONE, false);
                 return true;
-            case R.id.navigation_addtasks:
-                selectedTab = 2;
-                Intent createTask = new Intent(this, AddNewTaskActivity.class);
-                startActivity(createTask);
+
         }
         return false;
     }
@@ -594,5 +602,24 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         myIntent.putExtra("task", (Serializable) task);
         myIntent.putExtra("type", type);
         startActivity(myIntent);
+    }
+    private void logout(){
+        Intent logoutIntent = new Intent(this, LoginActivity.class);
+        Tools.user = null;
+        MainActivity.otherTaskList = null;
+        MainActivity.favTaskList = null;
+        MainActivity.doneTaskList = null;
+        logoutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        logoutIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        logoutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        stopService(new Intent(this, TokenService.class));
+        TokenPair.wipeData();
+        SharedPreferences sharedPref = getSharedPreferences(getString(R.string.token_file), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(getString(R.string.refresh_token), TokenPair.getRefreshToken());
+        editor.commit();
+        startActivity(logoutIntent);
+
+        finishAffinity();
     }
 }

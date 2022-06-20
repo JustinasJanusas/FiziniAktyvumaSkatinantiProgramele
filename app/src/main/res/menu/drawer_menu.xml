@@ -11,4 +11,8 @@
     <item android:title="Paskyros nustatymai"
         android:id="@+id/drawer_account"
         android:icon="@drawable/menu_item_account"/>
+    <item
+        android:id="@+id/navigation_addtasks"
+        android:icon="@drawable/addtasks1"
+        android:title="Sukurti užduotį" />
 </menu>

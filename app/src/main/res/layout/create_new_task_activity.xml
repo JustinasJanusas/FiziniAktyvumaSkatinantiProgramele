@@ -9,7 +9,7 @@
     android:paddingRight="10dp">
 
     <TextView
-        android:id="@+id/nameText"
+        android:id="@+id/createTaskTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="50dp"
+        android:layout_marginBottom="30dp"
         android:background="@drawable/rounded_button"
         android:text="Grįžti"
         android:textColor="@color/white" />
@@ -37,271 +37,208 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="110dp"
+        android:layout_marginBottom="90dp"
         android:background="@drawable/rounded_button"
         android:text="Įkelti"
         android:textColor="@color/white" />
 
     <TextView
+        android:id="@+id/taskTitleLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/nameText"
-        android:layout_gravity="center_vertical"
-        android:layout_marginTop="10dp"
-        android:paddingLeft="30dp"
-        android:text="Užduoties pavadinimas: "
-        android:textSize="16dp"
+        android:layout_below="@id/createTaskTitle"
+        android:text="Užduoties pavadinimas:"
+        android:textSize="18dp"
         android:textStyle="bold"
-        android:id="@+id/TaskNameTextView"/>
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="15dp"/>
+
     <FrameLayout
-        android:layout_centerInParent="true"
-        android:layout_width="330dp"
-        android:layout_height="35dp"
-        android:layout_below="@id/TaskNameTextView"
-        android:layout_marginTop="5dp"
-        android:id="@+id/TaskName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/taskTitleLabel"
+        android:layout_marginTop="3dp"
+        android:layout_marginHorizontal="15dp"
+        android:id="@+id/taskTitleTextLayout"
         android:background="@drawable/rounded_textview"
         >
         <EditText
-            android:id="@+id/taskName"
+            android:id="@+id/taskTitleText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingLeft="5dp"
             android:textSize="15dp">
+            <requestFocus />
         </EditText>
 
     </FrameLayout>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/TaskName"
-        android:layout_gravity="center_vertical"
-        android:layout_marginTop="10dp"
-        android:paddingLeft="30dp"
-        android:text="Užduoties tekstas: "
-        android:textSize="16dp"
-        android:textStyle="bold"
-        android:id="@+id/newtaskTextView"/>
-    <FrameLayout
-        android:layout_centerInParent="true"
-        android:layout_width="330dp"
-        android:layout_height="50dp"
-        android:layout_below="@id/newtaskTextView"
-        android:layout_marginTop="5dp"
-        android:id="@+id/newtaskText"
-        android:background="@drawable/rounded_textview">
-
-
-        <EditText
-            android:id="@+id/taskText"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:ems="250"
-            android:inputType="textMultiLine"
-            android:maxLength="270"
-            android:paddingLeft="5dp"
-            android:textSize="15dp"></EditText>
-
-    </FrameLayout>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/newtaskText"
-        android:layout_gravity="center_vertical"
-        android:layout_marginTop="10dp"
-        android:paddingLeft="30dp"
-        android:text="Įveskite platumą (latitude): "
-        android:textSize="16dp"
-        android:textStyle="bold"
-        android:id="@+id/TextViewlatitude"/>
-    <FrameLayout
-        android:layout_centerInParent="true"
-        android:layout_width="330dp"
-        android:layout_height="35dp"
-        android:layout_below="@id/TextViewlatitude"
-        android:layout_marginTop="5dp"
-        android:id="@+id/coordinates"
-        android:background="@drawable/rounded_textview">
-        <EditText
-            android:id="@+id/newLatitude"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="5dp"
-            android:textSize="15dp" >
-        </EditText>
-
-    </FrameLayout>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/coordinates"
-        android:layout_gravity="center_vertical"
-        android:layout_marginTop="10dp"
-        android:paddingLeft="30dp"
-        android:text="Įveskite ilgumą (longitude): "
-        android:textSize="16dp"
-        android:textStyle="bold"
-        android:id="@+id/TextViewLongitude"/>
-    <FrameLayout
-        android:layout_centerInParent="true"
-        android:layout_width="330dp"
-        android:layout_height="35dp"
-        android:layout_below="@id/TextViewLongitude"
-        android:layout_marginTop="5dp"
-        android:id="@+id/coordinatesLogitude"
-        android:background="@drawable/rounded_textview">
-        <EditText
-            android:id="@+id/newLongitude"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="5dp"
-            android:textSize="15dp" >
-        </EditText>
-
-    </FrameLayout>
-
     <LinearLayout
-        android:id="@+id/line"
+        android:id="@+id/spinnerLayout1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/coordinatesLogitude"
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_below="@id/taskTitleTextLayout"
+        android:layout_marginTop="8dp"
+        android:layout_marginHorizontal="15dp">
 
         <LinearLayout
-            android:id="@+id/category"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="horizontal"
-            android:paddingLeft="30dp">
+            android:layout_weight="1"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Kategorija:"
-                android:textSize="16dp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
             <Spinner
-                android:id="@+id/categorySpinner"
-                style="@style/Widget.AppCompat.Spinner"
+                android:id="@+id/createTaskCategorySpinner"
                 android:layout_width="match_parent"
-                android:layout_height="20dp" />
+                android:layout_height="20dp"
+                style="@style/Widget.AppCompat.Spinner"/>
         </LinearLayout>
 
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/line3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_below="@id/line"
-        android:orientation="horizontal">
-
-       <LinearLayout
-        android:id="@+id/radius"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/line"
-        android:layout_gravity="center"
-        android:orientation="horizontal"
-        android:paddingLeft="30dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Atsakymo spindulys:"
-            android:textSize="16dp"
-            android:textStyle="bold" />
-
-        <Spinner
-            android:id="@+id/radiusSpinner"
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            style="@style/Widget.AppCompat.Spinner"/>
-    </LinearLayout>
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:id="@+id/line2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/line3"
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal">
-
         <LinearLayout
-            android:id="@+id/level"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/line"
-            android:layout_gravity="center"
-            android:orientation="horizontal"
-            android:paddingLeft="30dp">
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginLeft="5dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Sudėtingumas:"
-                android:textSize="16dp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
             <Spinner
-                android:id="@+id/levelSpinner"
+                android:id="@+id/createTaskLevelSpinner"
                 android:layout_width="match_parent"
                 android:layout_height="20dp" />
         </LinearLayout>
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/spinnerLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/spinnerLayout1"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal">
+
         <LinearLayout
-            android:id="@+id/type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/level"
-            android:layout_gravity="center"
-            android:orientation="horizontal"
-            android:paddingLeft="30dp">
+            android:layout_weight="1"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Tipas:"
-                android:textSize="16dp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
             <Spinner
-                android:id="@+id/typeSpinner"
+                android:id="@+id/createTaskTypeSpinner"
+                style="@style/Widget.AppCompat.Spinner"
                 android:layout_width="match_parent"
                 android:layout_height="20dp" />
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+        </LinearLayout>
+
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/foto"
+    <TextView
+        android:id="@+id/taskTextLabel"
         android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:layout_below="@id/line2"
-        android:layout_gravity="center"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/spinnerLayout2"
+        android:layout_marginLeft="15dp"
         android:layout_marginTop="10dp"
-        android:orientation="horizontal"
-        android:paddingLeft="30dp">
+        android:text="Užduoties tekstas:"
+        android:textSize="18dp"
+        android:textStyle="bold" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/taskTextLabel"
+        android:layout_marginTop="3dp"
+        android:layout_marginHorizontal="15dp"
+        android:id="@+id/taskTextLayout"
+        android:background="@drawable/rounded_textview"
+        >
+        <EditText
+            android:id="@+id/taskText"
+            android:layout_width="match_parent"
+            android:layout_height="170dp"
+            android:paddingLeft="5dp"
+            android:textSize="15dp">
+            <requestFocus />
+        </EditText>
+
+    </FrameLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Dabartinės koodinatės:"
+        android:layout_below="@id/taskTextLayout"
+        android:id="@+id/coordinateLabel"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@id/refreshCoordinatesButton"
+        />
+
+    <TextView
+        android:id="@+id/coordinateText"
+        android:layout_width="180dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/coordinateLabel"
+        android:layout_marginTop="3dp"
+        android:layout_toRightOf="@id/refreshCoordinatesButton" />
+    <Button
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/refresh"
+        android:layout_below="@id/taskTextLayout"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="15dp"
+        android:id="@+id/refreshCoordinatesButton"
+        />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@id/coordinateText"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="15dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Įkelti nuotrauką:"
-            android:textSize="16dp"
+            android:text="Spindulys:"
+            android:textSize="18sp"
             android:textStyle="bold" />
 
-        <ImageButton
-            android:id="@+id/imageButton"
-            android:layout_width="20dp"
-            android:layout_height="20dp" />
+        <Spinner
+            android:id="@+id/radiusSpinner"
+            style="@style/Widget.AppCompat.Spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:entries="@array/radiusArray"/>
     </LinearLayout>
-
 
 </RelativeLayout>

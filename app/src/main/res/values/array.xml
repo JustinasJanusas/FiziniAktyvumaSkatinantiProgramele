@@ -1,3 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string-array name="radiusArray">
+        <item>-----</item>
+        <item>10KM</item>
+        <item>1KM</item>
+        <item>100M</item>
+        <item>10M</item>
+    </string-array>
 </resources>

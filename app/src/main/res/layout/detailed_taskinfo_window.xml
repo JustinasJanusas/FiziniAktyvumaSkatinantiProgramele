@@ -28,16 +28,15 @@
         android:id="@+id/image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true">
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp">
 
         <ImageView
             android:id="@+id/taskImage"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_gravity="center"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="15dp"
-            android:layout_marginBottom="20dp"/>
+            android:scaleType="fitCenter"/>
     </LinearLayout>
 
     <Button
@@ -51,6 +50,17 @@
         android:background="@drawable/rounded_button"
         android:textColor="@color/white"/>
 
+    <ImageButton
+        android:id="@+id/mapButton"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_alignBottom="@id/done"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="35dp"
+        android:layout_toLeftOf="@id/done"
+        android:background="@android:color/transparent"
+        android:scaleType="fitCenter"
+        android:src="@drawable/map_icon" />
     <Button
         android:id="@+id/done"
         android:layout_width="wrap_content"
