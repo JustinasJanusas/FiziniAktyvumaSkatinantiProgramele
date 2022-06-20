@@ -125,6 +125,8 @@ public class AddNewTaskActivity extends AppCompatActivity  {
     }
     @SuppressLint("MissingPermission")
     private void getLocation() {
+        TextView textView = findViewById(R.id.coordinateText);
+        textView.setText("");
         LocationManager mLocationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
         Criteria criteria = new Criteria();
         criteria.setAccuracy(Criteria.ACCURACY_FINE);
@@ -139,7 +141,7 @@ public class AddNewTaskActivity extends AppCompatActivity  {
                         @Override
                         public void accept(Location location) {
                             // code
-                            TextView textView = findViewById(R.id.coordinateText);
+
                             textView.setText(String.format("%.5f, %.5f", location.getLatitude(), location.getLongitude()));
                             currentLocation = location;
                         }

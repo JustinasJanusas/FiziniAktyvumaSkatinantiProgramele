@@ -189,6 +189,7 @@ public class TaskDetailedActivity extends Activity {
                 MainActivity.favTaskList = null;
                 MainActivity.otherTaskList = null;
                 Tools.user = null;
+                MainActivity.changed = true;
                 showPopupWindow(R.drawable.checkmark);
                 setDone();
                 type = MainActivity.DONE;

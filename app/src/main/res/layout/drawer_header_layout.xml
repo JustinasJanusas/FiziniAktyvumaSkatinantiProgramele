@@ -17,6 +17,7 @@
         app:strokeColor="@color/white"
         android:background="@android:color/transparent"
         android:layout_marginLeft="10dp"
+        android:scaleType="centerCrop"
         />
     <TextView
         android:id="@+id/drawerAccountNameText"

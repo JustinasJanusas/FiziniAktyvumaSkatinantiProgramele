@@ -5,6 +5,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -39,7 +40,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener{
-    private String TAG = "MainActivity";
+    private final String TAG = "MainActivity";
     static public List<Task> favTaskList;
     static public List<Task> otherTaskList;
     static public List<Task> doneTaskList;
@@ -54,16 +55,18 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     static public int levelSelected;
      private Boolean firstTime = true;
      private int selectedTab = 0;
-    private BottomNavigationView bottomNavigationView;
     private String otherNextPage;
     private String doneNextPage;
+    public static Boolean changed = false;
+    private Boolean needFilter = false;
+    private int failedTaskCount = 0;
 
-
+    @SuppressLint("NonConstantResourceId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        bottomNavigationView = findViewById(R.id.bottom_navigation);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
         bottomNavigationView.setSelectedItemId(R.id.navigation_tasks);
         categorySelected = 0;
@@ -79,39 +82,35 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
         NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        navigationView.setNavigationItemSelectedListener(item -> {
 
-                    switch (item.getItemId()){
-                        case R.id.drawer_leaderboard:
-                            Intent intent = new Intent(MainActivity.this, LeaderboardActivity.class);
-                            startActivity(intent);
-                            break;
-                        case R.id.drawer_friends:
-                            Intent friends = new Intent(MainActivity.this, FriendActivity.class);
-                            startActivity(friends);
-                            break;
-                        case R.id.drawer_account:
-                            Intent accountIntent = new Intent(MainActivity.this, AccountActivity.class);
-                            startActivity(accountIntent);
-                            break;
-                        case R.id.navigation_addtasks:
-                            selectedTab = 2;
-                            Intent createTask = new Intent(MainActivity.this, AddNewTaskActivity.class);
-                            startActivity(createTask);
-                        default:
-                            return false;
-                    }
-                    return true;
-            }
+                switch (item.getItemId()){
+                    case R.id.drawer_leaderboard:
+                        Intent intent = new Intent(MainActivity.this, LeaderboardActivity.class);
+                        startActivity(intent);
+                        break;
+                    case R.id.drawer_friends:
+                        Intent friends = new Intent(MainActivity.this, FriendActivity.class);
+                        startActivity(friends);
+                        break;
+                    case R.id.drawer_account:
+                        Intent accountIntent = new Intent(MainActivity.this, AccountActivity.class);
+                        startActivity(accountIntent);
+                        break;
+                    case R.id.navigation_addtasks:
+                        selectedTab = 2;
+                        Intent createTask = new Intent(MainActivity.this, AddNewTaskActivity.class);
+                        startActivity(createTask);
+                    default:
+                        return false;
+                }
+                return true;
         });
 
     }
     @Override
     protected void onRestart(){
         super.onRestart();
-        Log.e("AA", "wow");
         if(otherTaskList == null) {
             categoryId = -2;
             levelId = -2;
@@ -125,11 +124,12 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             showUser();
         }
     }
+    @SuppressLint("StaticFieldLeak")
     private class getUser extends AsyncTask<String, Void, User>{
 
         ProgressDialog actionProgressDialog =
                 new ProgressDialog(MainActivity.this);
-        int type = -1;
+
         @Override
         protected void onPreExecute(){
             actionProgressDialog.setMessage("Gaunami duomenys...");
@@ -141,13 +141,18 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         protected User doInBackground(String... str_param){
 
             String RestURL = str_param[0];
+            int i = 0;
             while (TokenPair.getAuthenticationToken() == null) {
+                if(i > 100){
+                    return null;
+                }
                 try {
                     Thread.sleep(100);
                 }
-                catch (Exception e){}
+                catch (Exception ignored){}
+                i++;
             }
-            List<User> data = null;
+            List<User> data;
             try{
                 java.lang.reflect.Type type =
                         new com.google.gson.reflect.TypeToken<List<User>>()
@@ -157,6 +162,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             }
             catch (Exception ex){
                 Log.e(TAG, ex.toString());
+                return null;
             }
 
             return data.get(0);
@@ -166,15 +172,21 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
             super.onPostExecute(result);
             actionProgressDialog.cancel();
+            if(result == null){
+                logout();
+                return;
+            }
+
             Tools.user = result;
             showUser();
 
         }
     }
+    @SuppressLint("SetTextI18n")
     private  void showUser(){
 
         ShapeableImageView shapeableImageView = findViewById(R.id.drawerAccountImage);
-        if(Tools.user.base64_picture != null && Tools.user.base64_picture != "") {
+        if(Tools.user.base64_picture != null && !Tools.user.base64_picture.equals( "")) {
 
             byte[] imageBytes = Base64.getDecoder().decode(Tools.user.base64_picture);
             shapeableImageView.setImageBitmap( BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length));
@@ -184,12 +196,19 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         TextView pointText = findViewById(R.id.drawerAccountPoint);
         pointText.setText(Tools.user.points+"");
     }
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
         switch (item.getItemId()) {
             case R.id.navigation_tasks:
                 selectedTab = 0;
+                if(changed){
+                    changed = false;
+                    needFilter = true;
+                    getFilteredTasks();
+                    return true;
+                }
                 if(favTaskList != null && otherTaskList != null){
                     showTasks(FAVORITE);}
                 else {
@@ -202,6 +221,12 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
             case R.id.navigation_history:
                 selectedTab = 1;
+                if(changed){
+                    changed = false;
+                    needFilter = true;
+                    getFilteredTasks();
+                    return true;
+                }
                 if(doneTaskList != null)
                     showTasks(DONE);
                 else
@@ -219,6 +244,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         new getFavoritesTask().execute(Tools.RestURL+url);
     }
 
+    @SuppressLint("StaticFieldLeak")
     private class getTasksTask extends AsyncTask<String, Void, TaskPage>{
 
         ProgressDialog actionProgressDialog =
@@ -237,11 +263,16 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             String RestURL = str_param[0];
             type = Integer.parseInt(str_param[1]);
             append = Boolean.parseBoolean(str_param[2]);
+            int i = 0;
             while (TokenPair.getAuthenticationToken() == null) {
+                if(i > 100){
+                    return null;
+                }
                 try {
                     Thread.sleep(100);
                 }
-                catch (Exception e){}
+                catch (Exception ignored){}
+                i++;
             }
             TaskPage data = null;
             try{
@@ -262,6 +293,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             }
             catch (Exception ex){
                 Log.e(TAG, ex.toString());
+
+                return null;
             }
 
             return data;
@@ -299,8 +332,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 }
                 showTasks(type);
             }
+            else
+                logout();
         }
     }
+    @SuppressLint("StaticFieldLeak")
     private class getFavoritesTask extends AsyncTask<String, Void, List<Task>>{
 
         ProgressDialog actionProgressDialog =
@@ -315,11 +351,16 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         protected List<Task> doInBackground(String... str_param){
             String RestURL = str_param[0];
+            int i = 0;
             while (TokenPair.getAuthenticationToken() == null) {
+                if(i > 100){
+                    return null;
+                }
                 try {
                     Thread.sleep(100);
                 }
-                catch (Exception e){}
+                catch (Exception ignored){}
+                i++;
             }
             List<Task> data = null;
             try{
@@ -338,6 +379,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             }
             catch (Exception ex){
                 Log.e(TAG, ex.toString());
+                return null;
             }
             return data;
         }
@@ -348,6 +390,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             if(result != null) {
                 favTaskList = result;
                 showTasks(FAVORITE);
+            }
+            else{
+                logout();
             }
         }
     }
@@ -385,20 +430,18 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         ListView taskListView = findViewById(R.id.taskListView);
         taskListView.setAdapter(listAdapter);
-        taskListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Object o = taskListView.getItemAtPosition(position);
-                Task task = (Task) o;
-                int t = type;
-                if(type != DONE){
-                    if(position < favTaskList.size())
-                        t = FAVORITE;
-                    else
-                        t = OTHER;
-                }
-                showDetailedInformation(task, parent, t);
-
+        taskListView.setOnItemClickListener((parent, view, position, id1) -> {
+            Object o = taskListView.getItemAtPosition(position);
+            Task task = (Task) o;
+            int t = type;
+            if(type != DONE){
+                if(position < favTaskList.size())
+                    t = FAVORITE;
+                else
+                    t = OTHER;
             }
+            showDetailedInformation(task, t);
+
         });
         if(type != FAVORITE) {
             taskListView.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -431,7 +474,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private void fillSpinner(List<TaskItem> list, Spinner spinner, int pos){
 
         CustomSpinnerAdapter adapter = new CustomSpinnerAdapter(MainActivity.this,
-                android.R.layout.simple_spinner_item,  list.toArray(new TaskItem[list.size()]));
+                android.R.layout.simple_spinner_item, list.toArray(new TaskItem[list.size()]));
         spinner.setAdapter(adapter);
         spinner.setSelection(pos);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -447,8 +490,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         });
     }
     private void getFilteredTasks(){
-        String u = "";
-        int type = -1;
+        String u;
+        int type;
         if(selectedTab == 0) {
             u = "api-auth/tasks/other";
             type = OTHER;
@@ -461,7 +504,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         int cId =((TaskItem) categorySpinner.getSelectedItem()).id;
         Spinner levelSpinner = findViewById(R.id.levelSpinner);
         int lId =((TaskItem) levelSpinner.getSelectedItem()).id;
-        if(cId != categoryId || lId != levelId) {
+        if(cId != categoryId || lId != levelId || needFilter) {
+            if(!needFilter)
+                changed = true;
             String url = Tools.RestURL + u;
             if (cId > -1 || lId > -1) {
                 url += "?";
@@ -489,7 +534,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         private ArrayList<Task> singleRow;
         private LayoutInflater thisInflater;
-        int rowID = -1;
+        int rowID;
         int rowID2 = -1;
         int count = -1;
         public CustomAdapter(Context context, ArrayList<Task> aRow, int id) {
@@ -523,7 +568,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            View row = null;
+            View row;
             if (convertView == null) {
                 row = thisInflater.inflate(rowID, parent, false);
             }
@@ -557,7 +602,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         }
 
     }
-    private class CustomSpinnerAdapter extends ArrayAdapter<TaskItem>{
+    private static class CustomSpinnerAdapter extends ArrayAdapter<TaskItem>{
         private Context context;
         private TaskItem[] values;
         public CustomSpinnerAdapter(Context context, int textViewResourceId, TaskItem[] values){
@@ -589,7 +634,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         }
 
         @Override
-        public View getDropDownView(int position,  View convertView, ViewGroup parent) {
+        public View getDropDownView(int position, View convertView, @NonNull ViewGroup parent) {
             TextView label = (TextView) super.getDropDownView(position, convertView, parent);
             label.setTextColor(Color.BLACK);
             label.setText(values[position].name);
@@ -597,13 +642,17 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         }
 
     }
-    private void showDetailedInformation(Task task, View v, int type){
+    private void showDetailedInformation(Task task, int type){
         Intent myIntent = new Intent(this, TaskDetailedActivity.class);
         myIntent.putExtra("task", (Serializable) task);
         myIntent.putExtra("type", type);
         startActivity(myIntent);
     }
     private void logout(){
+        if(failedTaskCount < 2){
+            failedTaskCount++;
+            return;
+        }
         Intent logoutIntent = new Intent(this, LoginActivity.class);
         Tools.user = null;
         MainActivity.otherTaskList = null;

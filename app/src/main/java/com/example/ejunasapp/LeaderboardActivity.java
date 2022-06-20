@@ -79,7 +79,7 @@ public class LeaderboardActivity extends AppCompatActivity {
 
             super.onPostExecute(result);
             actionProgressDialog.cancel();
-            result.removeIf(n -> (n.id == 1));
+            result.removeIf(n -> ((n.user.first_name+n.user.last_name).trim().equals("")));
             leaderboardList = result;
             if(leaderboardList != null) {
                 showUsers();

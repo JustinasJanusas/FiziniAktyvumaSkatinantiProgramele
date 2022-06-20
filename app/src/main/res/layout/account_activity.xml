@@ -27,7 +27,7 @@
         app:strokeWidth="2dp"
         app:strokeColor="@color/white"
         android:background="@android:color/transparent"
-
+        android:scaleType="centerCrop"
         />
     <TextView
         android:id="@+id/accountNameText"
