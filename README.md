@@ -8,7 +8,7 @@ Programos jau paruoštą apk failą galima rasti ./appApkFile aplanke.
 
 Jau sukurtos prisijungimo paskyros:
 
-USERNAME:jonas PASSWORD:jonas1234
-USERNAME:petras PASSWORD:petras123
-USERNAME:egle PASSWORD:egle1234
-USERNAME:lina PASSWORD:lina1234
+- USERNAME:jonas PASSWORD:jonas1234
+- USERNAME:petras PASSWORD:petras123
+- USERNAME:egle PASSWORD:egle1234
+- USERNAME:lina PASSWORD:lina1234
